@@ -1,6 +1,7 @@
 const express = require('express');
 
 //controllers
+const indexController = require('../controllers/indexController');
 
 //middleware
 
@@ -8,6 +9,6 @@ const express = require('express');
 const router = express.Router();
 
 //requests
-router.get('/', (req, res) => {res.status(200).json({message: 'hello'})});
+router.get('/', indexController.layout);
 
 module.exports = router;
