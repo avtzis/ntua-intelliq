@@ -2,6 +2,13 @@ const app = require('./app');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const db = require('./utilities/database');
+
+db.authenticate().then(() => {
+    console.log('Connection with the database has been established successfully');
+}).catch(err => {
+    console.error('Unable to connect to the database:', err);
+});
 
 const port = process.env.PORT || 3000;
 const myServer = https.createServer(
