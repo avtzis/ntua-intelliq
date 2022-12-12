@@ -1,28 +1,5 @@
-const mysql = require('mysql2');
-const {Sequelize, Model, DataTypes} = require('sequelize');
-
-// Connect to MySQL server
-const connection = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: 'user',
-        password: 'user',
-        port: '3306'
-    }
-);
-
-// Create database if it does not exist
-connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
-    console.log(results);
-    console.error(err);
-});
-
-// Connect sequelize to database
-const db = new Sequelize('intelliQ', 'user', 'user', {
-    host: 'localhost',
-    port: '3306',
-    dialect: 'mysql'
-});
+const {Sequelize, DataTypes} = require('sequelize');
+const db = require('./database');
 
 // Models
 const AdministratorModel = require('../models/administrator.js');
@@ -75,14 +52,20 @@ Questionnaire.belongsToMany(User, {through: Session, uniqueKey: 'sessionId'});
 Session.belongsToMany(Answer, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
 Answer.belongsToMany(Session, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
 
+
+
+
+
+
+
+
 module.exports = {
-    db,
-    Administrator,
-    Researcher,
-    Questionnaire,
-    Question,
-    Answer,
-    User,
-    Session,
-    UniqueAnswer
+  Administrator,
+  Researcher,
+  Questionnaire,
+  Question,
+  Answer,
+  User,
+  Session,
+  UniqueAnswer
 }
