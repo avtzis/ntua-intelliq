@@ -9,7 +9,7 @@ db.authenticate().then(() => {
 }).catch(err => {
     console.error('Unable to connect to the database:', err);
 });
-db.sync().catch(err => console.error(err));
+/* async () => */ db.sync({force: true}).catch(err => console.error(err));
 
 const port = process.env.PORT || 3000;
 const myServer = https.createServer(

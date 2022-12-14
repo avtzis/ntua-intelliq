@@ -33,6 +33,7 @@ const AnswerModel = require('../models/answer.js');
 const UserModel = require('../models/user.js');
 const SessionModel = require('../models/session.js');
 const UniqueAnswerModel = require('../models/unique-answer.js');
+const KeywordModel = require('../models/keyword.js')
 
 // Instances
 const Administrator = AdministratorModel(db, DataTypes);
@@ -43,6 +44,7 @@ const Answer = AnswerModel(db, DataTypes);
 const User = UserModel(db, DataTypes);
 const Session = SessionModel(db, DataTypes);
 const UniqueAnswer = UniqueAnswerModel(db, DataTypes);
+const Keyword = KeywordModel(db, DataTypes);
 
 // Associations
 Researcher.hasMany(Questionnaire);
@@ -75,6 +77,9 @@ Questionnaire.belongsToMany(User, {through: Session, uniqueKey: 'sessionId'});
 Session.belongsToMany(Answer, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
 Answer.belongsToMany(Session, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
 
+Questionnaire.hasMany(Keyword);
+Keyword.belongsTo(Questionnaire);
+
 module.exports = {
     db,
     Administrator,
@@ -84,5 +89,6 @@ module.exports = {
     Answer,
     User,
     Session,
-    UniqueAnswer
+    UniqueAnswer,
+    Keyword
 }
