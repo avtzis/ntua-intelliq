@@ -1,8 +1,8 @@
 const { Sequelize, Model, DataTypes } = require("sequelize");
-const answer = require("../models/answer");
-const {db, Question, Answer, Session, Questionnaire, Administrator} = require('../utilities/database');
+const {db, Question, Answer, Session, Questionnaire, Administrator, Token} = require('../utilities/database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const administrator = require("../models/administrator");
 
 exports.layout = async (req, res, next) => {
     const q = await Question.create({title: 'How many screens do you have'});
@@ -22,7 +22,7 @@ exports.layout = async (req, res, next) => {
     res.status(200).json(sessionAnswers);
 };
 
-exports.createSurvey = async (req, res, next) => {
+/* exports.createSurvey = async (req, res, next) => {
     const title = req.body.questionnaireTitle;
     const about = req.body.about;
     const keywords = req.body.keywords;
@@ -61,6 +61,46 @@ exports.createSurvey = async (req, res, next) => {
     } while(myQuestions.length < questions.length);
 
     res.status(201).json(myQuestions);
+} */
+
+exports.createSurvey = (req, res) => {
+    const title = req.body.questionnaireTitle;
+    const about = req.body.about;
+    const keywords = req.body.keywords;
+    const questions = req.body.questions;
+
+    Questionnaire.create({
+        title,
+        about
+    }).then(survey => {
+        keywords.forEach(async keyword => {
+            await survey.createKeyword({title: keyword});
+        });
+        return survey;
+    }).then(survey => {
+        questions.forEach(async question => {
+            const myQuestion = await survey.createQuestion({
+                title: question.title,
+                required: question.required,
+                type: question.type
+            })
+            question.answers.forEach(async answer => {
+                await myQuestion.createAnswer({title: answer.title})
+            })
+        })
+        return survey;
+    }).then(survey => {
+        survey.getQuestions().then(myQuestions => {
+            myQuestions.forEach(async (question, indexQ) => {
+                const myAnswers = await question.getAnswers();
+                myAnswers.forEach(async (answer, indexA) => {
+                    await answer.setNextQuestion(myQuestions[questions[indexQ].answer[indexA].nextQuestion])
+                })
+            })
+        })
+        return survey;
+    }).then(survey => res.status(201).json({message: 'survey created successfully', survey}))
+    .catch(err => res.status(500).json({message: 'internal server error', err}));
 }
 
 exports.getSurvey = async (req, res, next) => {
@@ -97,24 +137,41 @@ exports.login = (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
+    if(!(username && password)) return res.status(402).json({message: 'not enough paramaters'});
+
     Administrator.findOne({where: {username}}).then(admin => {
-        return bcrypt.compare(password, admin.password);
-    }).then(match => {
+        if(!admin) return {admin: null, match: false};
+        else return {admin: admin, match: bcrypt.compare(password, admin.password)};
+    }).then(({admin, match}) => {
         if(match) {
             const token = jwt.sign({username}, 'secret');
-            res.status(200).json({token});
+            admin.createToken({token, role: 'admin'}).then(() => res.status(200).json({token}));
         } else {
-            res.status(401).json({message: 'wrong password'})
+            res.status(401).json({message: 'wrong credentials'})
         }
     })
+}
+
+exports.logout = (req, res) => {
+    const token = req.header('X-OBSERVATORY-AUTH');
+
+    if(!token) 
+        return res.status(401).json({message: 'no token'});
+    else
+        Token.findOne({where: {token}}).then(myToken => {
+            if(!myToken)
+                return res.status(401).json({message: 'invalid token'});
+            else {
+                try {myToken.destroy().then(() => res.status(200).json({message: 'successful logout'}))}
+                catch (err) {res.status(500).json({message: 'internal server error'})}
+            }
+        }).catch(err => {res.status(500).json({message: 'internal server error'})})
 }
 
 exports.register = (req, res) => {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-
-    console.log(password);
 
     Administrator.create({
         username,
