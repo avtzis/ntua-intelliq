@@ -34,7 +34,8 @@ const UserModel = require('../models/user.js');
 const SessionModel = require('../models/session.js');
 const UniqueAnswerModel = require('../models/unique-answer.js');
 const KeywordModel = require('../models/keyword.js')
-const TokenModel = require('../models/token.js')
+const TokenModel = require('../models/token.js');
+const token = require('../models/token.js');
 
 // Instances
 const Administrator = AdministratorModel(db, DataTypes);
@@ -88,6 +89,9 @@ User.hasOne(Token);
 Token.belongsTo(User);
 Token.belongsTo(Researcher);
 Token.belongsTo(Administrator);
+
+Session.hasOne(Token);
+Token.belongsTo(Session);
 
 module.exports = {
     db,

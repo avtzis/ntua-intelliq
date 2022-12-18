@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       autoIncrement: true
+    },
+    finished: {
+      type: DataTypes.BOOLEAN,
+      default: 'false'
     }
   });
 

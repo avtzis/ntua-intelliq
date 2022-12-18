@@ -6,12 +6,12 @@ module.exports = (req, res, next) => {
 
     if(!token) return res.status(401).json({message: 'no token'});
 
-    jwt.verify(token, 'secret', (err, username) => {
+    jwt.verify(token, 'secret', (err, user) => {
         if(err) res.status(403).json({message: 'invalid token'});
         else {
             Token.findOne({where: {token}}).then(myToken => {
                 if(myToken) {
-                    req.username = username;
+                    req.user = user;
                     req.role = myToken.role;
                     next();
                 }

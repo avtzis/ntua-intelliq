@@ -22,7 +22,7 @@ exports.layout = async (req, res, next) => {
     res.status(200).json(sessionAnswers);
 };
 
-/* exports.createSurvey = async (req, res, next) => {
+exports.createSurvey = async (req, res, next) => {
     const title = req.body.questionnaireTitle;
     const about = req.body.about;
     const keywords = req.body.keywords;
@@ -33,22 +33,37 @@ exports.layout = async (req, res, next) => {
         about
     });
 
-    keywords.forEach(async keyword => {
+    for(const keyword of keywords) {
         await survey.createKeyword({title: keyword});
-    });
+    };
 
-    questions.forEach(async (question, index) => {
+    for(const question of questions) {
         const myQuestion = await survey.createQuestion({
             title: question.title,
             required: question.required,
             type: question.type
         })
-        question.answers.forEach(async answer => {
+        for(const answer of question.answers) {
             await myQuestion.createAnswer({title: answer.title})
-        }); 
-    });
+        }; 
+    };
+
+    let iQ=0, iA=0;
+    const myQuestions = await survey.getQuestions();
+    for(const question of myQuestions) {
+        iA = 0;
+        const myAnswers = await question.getAnswers();
+        for(const answer of myAnswers) {
+            const nextQuestionIndex = Number(questions[iQ].answers[iA].nextQuestion);
+            if(nextQuestionIndex > iQ) {
+                await answer.setNextQuestion(myQuestions[nextQuestionIndex]);
+            }
+            iA++;
+        }
+        iQ++;
+    }
     
-    let myQuestions;
+    /* let myQuestions;
     do {
         myQuestions = await survey.getQuestions();
         if(myQuestions.length < questions.length) continue;
@@ -58,12 +73,12 @@ exports.layout = async (req, res, next) => {
                 await answer.setNextQuestion(myQuestions[questions[indexQ].answers[indexA].nextQuestion])
             });
         });
-    } while(myQuestions.length < questions.length);
+    } while(myQuestions.length < questions.length); */
 
     res.status(201).json(myQuestions);
-} */
+}
 
-exports.createSurvey = (req, res) => {
+/* exports.createSurvey = (req, res) => {
     const title = req.body.questionnaireTitle;
     const about = req.body.about;
     const keywords = req.body.keywords;
@@ -99,9 +114,9 @@ exports.createSurvey = (req, res) => {
             })
         })
         return survey;
-    }).then(survey => res.status(201).json({message: 'survey created successfully', survey}))
+    }).then(survey => res.status(201).json({message: 'survey created successfully', user, survey}))
     .catch(err => res.status(500).json({message: 'internal server error', err}));
-}
+} */
 
 exports.getSurvey = async (req, res, next) => {
     const survey = await Questionnaire.findByPk(1);
