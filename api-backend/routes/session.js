@@ -11,15 +11,14 @@ const authUser = require('../middleware/authorizeUser');
 const router = express.Router();
 
 // Requests
-router.post('/new/:questionnaireID', sessionController.newSession);
+router.post('/new/:questionnaireID', authenticate, sessionController.newSession);
+router.get('/:questionnaireID/currentQuestion', authenticate, sessionController.getCurrentQuestion);
+router.post('/:questionnaireID/submitAnswer', authenticate, sessionController.postAnswer);
 
-router.post('/:id/nextQuestion', authenticate, sessionController.postNextQuestion);
-router.get('/:id/nextQuestion', authenticate, sessionController.getNextQuestion);
+/* router.post('/:questionnaireID/prevQuestion', authenticate, sessionController.postPrevQuestion);
+router.get('/:questionnaireID/prevQuestion', authenticate, sessionController.getPrevQuestion); */
 
-router.post('/:id/prevQuestion', authenticate, sessionController.postPrevQuestion);
-router.get('/:id/prevQuestion', authenticate, sessionController.getPrevQuestion);
-
-router.post('/:id/submitSurvey', authenticate, sessionController.postSubmit);
+router.post('/:questionnaireID/submitSurvey', authenticate, sessionController.postSubmit);
 router.get('/finished', authenticate, sessionController.finishedLayout);
 
 module.exports = router;

@@ -63,19 +63,9 @@ exports.createSurvey = async (req, res, next) => {
         iQ++;
     }
     
-    /* let myQuestions;
-    do {
-        myQuestions = await survey.getQuestions();
-        if(myQuestions.length < questions.length) continue;
-        myQuestions.forEach(async (question, indexQ) => {
-            const myAnswers = await question.getAnswers();
-            myAnswers.forEach(async (answer, indexA) => {
-                await answer.setNextQuestion(myQuestions[questions[indexQ].answers[indexA].nextQuestion])
-            });
-        });
-    } while(myQuestions.length < questions.length); */
+    await survey.setFirstQuestion(myQuestions[0]);
 
-    res.status(201).json(myQuestions);
+    return res.status(201).json(survey.toJSON());
 }
 
 /* exports.createSurvey = (req, res) => {

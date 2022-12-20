@@ -4,14 +4,19 @@ const jwt = require('jsonwebtoken');
 
 exports.layout = (req, res) => {}
 
-exports.registerLayout = (req, res) => {}
+exports.registerLayout = async (req, res) => {}
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
     if(!(username && password)) 
         return res.status(402).json({message: 'not enough paramaters'});
+
+    const someAdmin = await Administrator.findOne({where: {username}});
+    const someResearcher = await Researcher.findOne({where: {username}});
+    const someUser = await User.findOne({where: {username}});
+    if(someAdmin || someResearcher || someUser) return res.status(400).json({message: 'username already exists'});
 
     User.create({
         username,

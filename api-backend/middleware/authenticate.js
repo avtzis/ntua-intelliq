@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
     if(!token) return res.status(401).json({message: 'no token'});
 
     jwt.verify(token, 'secret', (err, user) => {
-        if(err) res.status(403).json({message: 'invalid token'});
+        if(err) res.status(403).json({authenticate: {message: 'invalid token'}});
         else {
             Token.findOne({where: {token}}).then(myToken => {
                 if(myToken) {
@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
                     next();
                 }
                 else {
-                    res.status(403).json({message: 'token destroyed'});
+                    res.status(403).json({authenticate: {message: 'token destroyed'}});
                 }
             })
         }

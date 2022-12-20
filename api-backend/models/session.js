@@ -8,7 +8,11 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     finished: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.STRING,
+      default: 'false'
+    },
+    submitted: {
+      type: DataTypes.STRING,
       default: 'false'
     }
   });

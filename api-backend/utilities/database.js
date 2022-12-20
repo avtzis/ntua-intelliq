@@ -74,11 +74,11 @@ UniqueAnswer.belongsTo(Session);
 Questionnaire.hasMany(Session);
 Session.belongsTo(Questionnaire);
 
-User.belongsToMany(Questionnaire, {through: Session, uniqueKey: 'sessionId'});
-Questionnaire.belongsToMany(User, {through: Session, uniqueKey: 'sessionId'});
+User.belongsToMany(Questionnaire, {through: Session});
+Questionnaire.belongsToMany(User, {through: Session});
 
-Session.belongsToMany(Answer, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
-Answer.belongsToMany(Session, {through: UniqueAnswer, uniqueKey: 'uniqueAnswerId'});
+Session.belongsToMany(Answer, {through: UniqueAnswer});
+Answer.belongsToMany(Session, {through: UniqueAnswer});
 
 Questionnaire.hasMany(Keyword);
 Keyword.belongsTo(Questionnaire);
@@ -90,8 +90,14 @@ Token.belongsTo(User);
 Token.belongsTo(Researcher);
 Token.belongsTo(Administrator);
 
-Session.hasOne(Token);
-Token.belongsTo(Session);
+/* Session.hasOne(Token);
+Token.belongsTo(Session); */
+
+Questionnaire.belongsTo(Question, {as: 'firstQuestion', foreignKey: 'firstQuestionId'});
+Question.hasOne(Questionnaire, {as: 'firstQuestionInSurvey', foreignKey: 'firstQuestionId'});
+
+Question.hasMany(Session, {as: 'currentQuestionInSession', foreignKey: 'currentQuestionId'})
+Session.belongsTo(Question, {as: 'currentQuestion', foreignKey: 'currentQuestionId'});
 
 module.exports = {
     db,
