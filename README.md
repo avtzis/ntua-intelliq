@@ -1,9 +1,10 @@
 # Software Engineering Project 2022-2023
 
-Group: (your group goes here, example: softeng2022-00)
-Members: elYYNNN, elYYNNN, ... (replace YYNNN as needed. PLEASE keep this up-to-date)
+Group: softeng2022-34
+Members: el19241
   
-  
+note: avtzis = ntua-el19421
   
 (your README.md content goes here)
 
+/****** under construction ******/
