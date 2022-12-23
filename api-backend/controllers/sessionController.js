@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const answer = require('../models/answer');
+const user = require('../models/user');
 const { Token, User, Questionnaire, Session, Answer } = require('../utilities/database');
 
 exports.newSession = async (req, res, next) => {
@@ -114,4 +115,25 @@ exports.postSubmit = async (req, res) => {
 
 exports.finishedLayout = (req, res) => {
     return res.status(200).json({message: 'Survey submitted. Thank you for your participation!'})
+}
+
+exports.mySurveysLayout = async (req, res) => {
+    const username = req.user.username;
+    
+    const user = await user.findOne({where: {username}});
+
+    const sessions = await user.getSessions();
+
+    return res.status(200).json({sessions});
+}
+
+exports.getSession = async (req, res) => {
+    const username = req.user.username;
+    const questionnaireId = req.params.id;
+    
+    const user = await user.findOne({where: {username}});
+
+    const sessions = await user.getSessions({where: {questionnaireId}});
+
+    return res.status(200).json({sessions});
 }

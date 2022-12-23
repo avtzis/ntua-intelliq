@@ -12,12 +12,12 @@ const router = express.Router();
 
 // Requests
 router.get('/', adminController.layout);
-router.get('/serverstatus', authenticate, authAdmin, adminController.statusLayout);
-router.get('/healthcheck', authenticate, authAdmin, adminController.healthcheck);
+router.get('/healthcheck', authenticate, authAdmin, adminController.getHealthCheck);
 router.post('/questionnaire_upd', authenticate, authAdmin, adminController.postSurvey);
 router.post('/resetall', authenticate, authAdmin, adminController.serverReset);
 router.post('/resetq/:questionnaireID', authenticate, authAdmin, adminController.surveyReset);
-router.post('/usermod/:username/:password', authenticate, authAdmin, adminController.usermod);
-router.get('/users/:username', authenticate, authAdmin, adminController.usermod);
+router.post('/usermod/:username/:password', authenticate, authAdmin, adminController.userMod);
+router.post('/partnermod/:username/:password', authenticate, authAdmin, adminController.partnerMod);
+router.get('/users/:username', authenticate, authAdmin, adminController.getUser);
 
 module.exports = router;

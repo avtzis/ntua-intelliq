@@ -1,13 +1,21 @@
 const mysql = require('mysql2');
 const {Sequelize, Model, DataTypes} = require('sequelize');
 
+const dbconnection = {
+    dialect: 'mysql',
+    host: 'localhost',
+    port: '3306',
+    user: 'user',
+    password: 'user'
+}
+
 // Connect to MySQL server
 const connection = mysql.createConnection(
     {
-        host: 'localhost',
-        user: 'user',
-        password: 'user',
-        port: '3306'
+        host: dbconnection.host,
+        user: dbconnection.user,
+        password: dbconnection.password,
+        port: dbconnection.port
     }
 );
 
@@ -19,9 +27,9 @@ connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
 
 // Connect sequelize to database
 const db = new Sequelize('intelliQ', 'user', 'user', {
-    host: 'localhost',
-    port: '3306',
-    dialect: 'mysql'
+    host: dbconnection.host,
+    port: dbconnection.port,
+    dialect: dbconnection.dialect
 });
 
 // Models
@@ -51,13 +59,13 @@ const Token = TokenModel(db, DataTypes);
 
 // Associations
 Researcher.hasMany(Questionnaire);
-Questionnaire.belongsTo(Researcher);
+Questionnaire.belongsTo(Researcher, {onDelete: 'CASCADE'});
 
 Questionnaire.hasMany(Question);
-Question.belongsTo(Questionnaire);
+Question.belongsTo(Questionnaire, {onDelete: 'CASCADE'});
 
 Question.hasMany(Answer);
-Answer.belongsTo(Question);
+Answer.belongsTo(Question, {onDelete: 'CASCADE'});
 
 Question.hasMany(Answer, {as: 'originAnswer', foreignKey: 'nextQuestionId'});
 Answer.belongsTo(Question, {as: 'nextQuestion', foreignKey: 'nextQuestionId'});
@@ -69,7 +77,7 @@ User.hasMany(Session);
 Session.belongsTo(User);
 
 Session.hasMany(UniqueAnswer);
-UniqueAnswer.belongsTo(Session);
+UniqueAnswer.belongsTo(Session, {onDelete: 'CASCADE'});
 
 Questionnaire.hasMany(Session);
 Session.belongsTo(Questionnaire);
@@ -80,8 +88,8 @@ Questionnaire.belongsToMany(User, {through: Session});
 Session.belongsToMany(Answer, {through: UniqueAnswer});
 Answer.belongsToMany(Session, {through: UniqueAnswer});
 
-Questionnaire.hasMany(Keyword);
-Keyword.belongsTo(Questionnaire);
+Questionnaire.belongsToMany(Keyword, {through: 'Survey_Keyword'});
+Keyword.belongsToMany(Questionnaire, {through: 'Survey_Keyword'});
 
 Administrator.hasOne(Token);
 Researcher.hasOne(Token);
@@ -101,6 +109,7 @@ Session.belongsTo(Question, {as: 'currentQuestion', foreignKey: 'currentQuestion
 
 module.exports = {
     db,
+    dbconnection,
     Administrator,
     Researcher,
     Questionnaire,

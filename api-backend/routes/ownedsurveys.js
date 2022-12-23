@@ -12,15 +12,16 @@ const authResearcher = require('../middleware/authorizeResearcher');
 const router = express.Router();
 
 // Requests
-router.get('/', authenticate, authResearcher, surveyController.ownedSurveysLayout);
-router.get('/survey/:id', authenticate, authResearcher, surveyController.getSurveyInfo);
+/* router.get('/', authenticate, authResearcher, surveyController.ownedSurveysLayout);
+router.get('/survey/:id', authenticate, authResearcher, surveyController.getSurveyInfo); */
 //download format??
-router.post('/survey/:id/update', authenticate, authResearcher, surveyController.updateSurvey);
-router.post('/survey/:id/delete', authenticate, authResearcher, surveyController.deleteSurvey);
-router.get('/survey/:id/answers', authenticate, authResearcher, surveyController.getSurveyAnswers);
+// router.post('/survey/:id/update', authenticate, authResearcher, surveyController.updateSurvey);
+// router.post('/survey/:id/delete', authenticate, authResearcher, surveyController.deleteSurvey);
+//router.get('/survey/:id/answers', authenticate, authResearcher, surveyController.getSurveyAnswers);
 //filters?? graphs??
+router.post('/survey/:id/publish', authenticate, authResearcher, surveyController.publishSurvey);
 
-router.get('/createSurvey', authenticate, authResearcher, surveyController.createSurveyLayout);
+//router.get('/createSurvey', authenticate, authResearcher, surveyController.createSurveyLayout);
 router.post('/createSurvey', authenticate, authResearcher, surveyController.createSurvey);
 
 module.exports = router;

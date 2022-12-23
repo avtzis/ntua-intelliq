@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     about: {
       type: DataTypes.TEXT
+    },
+    published: {
+      type: DataTypes.BOOLEAN,
+      default: 'false'
     }
   });
 

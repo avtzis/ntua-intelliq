@@ -22,10 +22,10 @@ router.post('/login', mainController.login);
 
 router.post('/logout', mainController.logout);
 
-router.get('/questionnaire/:questionnaireID', authenticate, authResearcher, mainController.getSurvey);
+/* router.get('/questionnaire/:questionnaireID', authenticate, authResearcher, mainController.getSurvey);
 router.get('/question/:questionnaireID/:questionID', authenticate, authResearcher, mainController.getQuestion);
 router.post('/doanswer/:questionnaireID/:questionID/:session/:optionID', authenticate, authUser, mainController.postAnswer);
 router.get('/getsessionanswers/:questionnaireID/:session', authenticate, authUser, mainController.getSessionAnswers);
-router.get('/getquestionanswers/:questionnaireID/:questionID', authenticate, authResearcher, mainController.getAnswers);
+router.get('/getquestionanswers/:questionnaireID/:questionID', authenticate, authResearcher, mainController.getAnswers); */
 
 module.exports = router;

@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // Import Routes
-const index = require('./routes/index');
+// const index = require('./routes/index');
 const home = require('./routes/home');
-/* const admin = require('./routes/admin');
+const admin = require('./routes/admin');
 const profile = require('./routes/profile');
 const mySurveys = require('./routes/mysurveys');
-const ownedSurveys = require('./routes/ownedsurveys'); */
+const ownedSurveys = require('./routes/ownedsurveys');
 const session = require('./routes/session');
 
 // Express app
@@ -25,15 +25,15 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/intelliq_api', home);
-/* app.use('/intelliq_api/admin', admin);
+app.use('/intelliq_api/admin', admin);
 app.use('/intelliq_api/profile', profile);
 app.use('/intelliq_api/mysurveys', mySurveys);
-app.use('/intelliq_api/ownedsurveys', ownedSurveys); */
+app.use('/intelliq_api/ownedsurveys', ownedSurveys);
 app.use('/intelliq_api/session', session);
-app.use('/', index);
+// app.use('/', index);
 
 // Redirect Index
-//app.get('/', (req, res) => res.redirect('/intelliq_api'));
+app.get('/', (req, res) => res.redirect('/intelliq_api'));
 
 // Error 404
 app.use((req, res, next) => {
