@@ -1,3 +1,6 @@
 .gitignore
 api-backend/node_modules
 api-backend/temp.js
+api-backend/routes/index.js
+api-backend/controllers/indexController.js
+data/admintoken.json

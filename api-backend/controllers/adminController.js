@@ -1,4 +1,5 @@
 const { db, dbconnection, Answer, Keyword, Question, Questionnaire, Researcher, Session, Token, UniqueAnswer, User, Administrator } = require('../utilities/database');
+const { Op } = require('sequelize');
 
 exports.layout = (req, res) => {}
 
@@ -40,7 +41,7 @@ exports.postSurvey = async (req, res) => {
         const myAnswers = await question.getAnswers();
         iA = 0;
         for(const answer of myAnswers) {
-            const nextQuestionIndex = Number(questions[iQ].answers[iA].nextqID.substring(1));
+            const nextQuestionIndex = Number(questions[iQ].options[iA].nextqID/* .substring(1) */);
             if(nextQuestionIndex > iQ) {
                 await answer.setNextQuestion(myQuestions[nextQuestionIndex]);
             }
@@ -63,14 +64,14 @@ exports.postSurvey = async (req, res) => {
 
 exports.serverReset = async (req, res) => {
     try {
-        await Answer.destroy({truncate: true});
-        await Keyword.destroy({truncate: true});
-        await Question.destroy({truncate: true});
-        await Questionnaire.destroy({truncate: true});
-        await Researcher.destroy({truncate: true});
-        await Session.destroy({truncate: true});
-        await UniqueAnswer.destroy({truncate: true});
-        await User.destroy({truncate: true});
+        await UniqueAnswer.destroy({where: {id: {[Op.gte]: 1}}});
+        await Answer.destroy({where: {id: {[Op.gte]: 1}}});
+        await Question.destroy({where: {id: {[Op.gte]: 1}}});
+        await Keyword.destroy({where: {id: {[Op.gte]: 1}}});
+        await Questionnaire.destroy({where: {id: {[Op.gte]: 1}}});
+        await Researcher.destroy({where: {id: {[Op.gte]: 1}}});
+        await Session.destroy({where: {id: {[Op.gte]: 1}}});
+        await User.destroy({where: {id: {[Op.gte]: 1}}});
 
         return res.status(200).json({status: 'OK'});
     } catch(err) {return res.status(500).json({status: 'failed', reason: err})}

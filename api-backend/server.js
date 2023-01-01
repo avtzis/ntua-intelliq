@@ -2,13 +2,9 @@ const app = require('./app');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const { db } = require('./utilities/database');
+const { db, Administrator, verifyDB } = require('./utilities/database');
 
-try {
-    /* await */ db.authenticate();
-    db.sync({force: true});
-    console.log('Connection with the database has been established successfully');
-} catch(err) {console.error('Unable to connect to the database:', err);}
+verifyDB();
 
 const myServer = https.createServer(
     {

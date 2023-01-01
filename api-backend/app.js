@@ -33,7 +33,7 @@ app.use('/intelliq_api/session', session);
 // app.use('/', index);
 
 // Redirect Index
-app.get('/', (req, res) => res.redirect('/intelliq_api'));
+//app.get('/', (req, res) => res.redirect('/intelliq_api'));
 
 // Error 404
 app.use((req, res, next) => {
