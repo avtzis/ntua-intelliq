@@ -1,8 +1,8 @@
 import React from 'react'
 import { Autocomplete, TextField, Grid } from '@mui/material';
 
-const NextQuestion = (props) => {
-    const {boxes, box} = props;
+const NextQuestionEdit = (props) => {
+    const {boxes, box, option} = props;
     const options = Array.from({length: boxes.length}, (_, i) => i + 1);
     options.push('end');
 
@@ -10,6 +10,7 @@ const NextQuestion = (props) => {
     <React.Fragment>
         <Grid item xs={12} sm={6}>
             <Autocomplete 
+                value={/* option.nextQuestion */ 1}
                 required
                 disablePortal
                 id='type'
@@ -24,4 +25,4 @@ const NextQuestion = (props) => {
   )
 }
 
-export default NextQuestion
+export default NextQuestionEdit

@@ -1,14 +1,53 @@
 import React from 'react'
 import { Container, CssBaseline, Paper, ThemeProvider, Typography, Grid, TextField, Box, Button, FormControlLabel, Checkbox, Autocomplete, Stack, IconButton } from '@mui/material'
 import theme from '../theme'
-import AnswerType from '../components/AnswerType'
+import AnswerTypeEdit from '../components/AnswerTypeEdit'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ClearIcon from '@mui/icons-material/Clear';
 import { v4 as uuidv4 } from 'uuid';
 
-const Create = () => {
-    const [questionBoxes, setQuestionBoxes] = React.useState([]);
+const survey = {
+    title: 'Survey Test',
+    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis a massa iaculis, efficitur enim sit amet, ultricies lorem. Fusce nunc diam, laoreet nec pretium vel, vehicula ut felis. Duis tincidunt est urna, vitae gravida neque tristique a. Quisque sagittis ultrices odio, at rutrum nisi dapibus eu. Vivamus posuere enim eros, vitae tincidunt est accumsan blandit. Sed mollis sed tellus et porttitor.',
+    keywords: 'test1, test2',
+    questions: [
+        {
+            qTitle: 'Test Question 1',
+            type: 'Profile',
+            required: false,
+            aType: 'Textbox',
+            options: [
+                {
+                    opttxt: '<*>',
+                    nextQuestion: 2
+                }
+            ]
+        },
+        {
+            qTitle: 'Test Question 2',
+            type: 'Question',
+            required: true,
+            aType: 'Options',
+            options: [
+                {
+                    opttxt: 'Test Option 1',
+                    nextQuestion: 'end'
+                },
+                {
+                    opttxt: 'Test Option 2',
+                    nextQuestion: 'end'
+                }
+            ]
+        }
+    ]
+}
+
+const Edit = () => {
+    let initBoxes = [];
+    for(let i in survey.questions) initBoxes.push(uuidv4());
+
+    const [questionBoxes, setQuestionBoxes] = React.useState(initBoxes);
 
     const handleAdd = () => {
         const key =  uuidv4();
@@ -70,6 +109,7 @@ const Create = () => {
                                 fullWidth
                                 autoFocus
                                 required
+                                value={survey.title}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -80,6 +120,7 @@ const Create = () => {
                                 fullWidth
                                 multiline
                                 rows={4}
+                                value={survey.about}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -88,6 +129,7 @@ const Create = () => {
                                 id='keywords'
                                 label='Keywords'
                                 fullWidth
+                                value={survey.keywords}
                             />
                         </Grid>
                     </Grid>
@@ -122,6 +164,7 @@ const Create = () => {
                                     fullWidth
                                     autoFocus
                                     required
+                                    value={survey.questions[questionBoxes.findIndex((id) => id === box)].qTitle}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -133,12 +176,13 @@ const Create = () => {
                                     options={['Question', 'Profile']}
                                     sx={{width: 300}}
                                     renderInput={(params) => <TextField {...params} label='Type' />}
+                                    value={survey.questions[questionBoxes.findIndex((id) => id === box)].type}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <FormControlLabel control={<Checkbox />} label='Required' />
+                                <FormControlLabel control={<Checkbox checked={survey.questions[questionBoxes.findIndex((id) => id === box)].required}/>} label='Required' />
                             </Grid>
-                            <AnswerType boxes={questionBoxes} box={(questionBoxes.findIndex((id) => id === box) + 1)}/>
+                            <AnswerTypeEdit boxes={questionBoxes} box={(questionBoxes.findIndex((id) => id === box) + 1)} question={survey.questions[questionBoxes.findIndex((id) => id === box)]}/>
                         </Grid>
                     </Paper>
                 </Container>
@@ -157,4 +201,4 @@ const Create = () => {
   )
 }
 
-export default Create
+export default Edit

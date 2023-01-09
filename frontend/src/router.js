@@ -9,6 +9,7 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import Profile from './routes/Profile';
 import Create from './routes/Create';
+import Edit from './routes/Edit';
 
 const router = createBrowserRouter([
     {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
             {
                 path: 'surveys/create',
                 element: <Create />
+            },
+            {
+                path: 'surveys/edit',
+                element: <Edit />
             }
         ]
     }

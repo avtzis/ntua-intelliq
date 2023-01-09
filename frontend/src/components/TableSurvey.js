@@ -215,7 +215,7 @@ const RowOne = (props) => {
           <Button theme={theme} startIcon={<GetAppIcon />}>Export</Button>
         </TableCell>
         <TableCell align='right'>
-          <Button theme={theme} startIcon={<EditIcon />}>Edit</Button>
+          <Button theme={theme} startIcon={<EditIcon />} href='/surveys/edit'>Edit</Button>
         </TableCell>
         <TableCell align='right'>
           <Button theme={theme} startIcon={<DeleteForeverIcon />}>Delete</Button>

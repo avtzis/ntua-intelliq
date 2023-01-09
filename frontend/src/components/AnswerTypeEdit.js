@@ -1,15 +1,18 @@
 import React from 'react'
 import { Autocomplete, TextField, Grid, Button, Container, Paper, Box, IconButton, Stack } from '@mui/material';
-import NextQuestion from './NextQuestion';
+import NextQuestionEdit from './NextQuestionEdit';
 import theme from '../theme';
 import ClearIcon from '@mui/icons-material/Clear';
 
 const AnswerTypeOptions = ['Options', 'Textbox'];
 
-const AnswerType = (props) => {
-  const {boxes, box} = props;
-  const [value, setValue] = React.useState(null);
-  const [answerBoxes, setAnswerBoxes] = React.useState([]);
+const AnswerTypeEdit = (props) => {
+  const {boxes, box, question} = props;
+  let initAnswers =[];
+  for(let i in question.options) initAnswers.push(i+1)
+
+  const [value, setValue] = React.useState(question.aType);
+  const [answerBoxes, setAnswerBoxes] = React.useState(initAnswers);
 
   const handleAddAnswer = () => {
     const lastElement = answerBoxes[answerBoxes.length - 1];
@@ -40,7 +43,7 @@ const AnswerType = (props) => {
         </Grid>
         {
             value === 'Textbox' ? 
-                <NextQuestion boxes={boxes} box={box} /> :
+                <NextQuestionEdit boxes={boxes} box={box} option={question.options[0]}/> :
                 value === 'Options' ?
                     <Grid item xs={12}>
                         <Container maxWidth='md'>
@@ -61,10 +64,11 @@ const AnswerType = (props) => {
                                                             fullWidth
                                                             autoFocus
                                                             required
+                                                            value={question.options[boxKey-1]}
                                                         />
                                                     </Stack>
                                                 </Grid>
-                                                <NextQuestion boxes={boxes} box={box} />
+                                                <NextQuestionEdit boxes={boxes} box={box} option={question.options[boxKey-1]}/>
                                             </React.Fragment>
                                         )
                                     }
@@ -85,4 +89,4 @@ const AnswerType = (props) => {
   )
 }
 
-export default AnswerType
+export default AnswerTypeEdit
