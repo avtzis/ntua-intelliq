@@ -45,7 +45,7 @@ const survey = {
 
 const Edit = () => {
     let initBoxes = [];
-    for(let i in survey.questions) initBoxes.push(uuidv4());
+    //for(let i in survey.questions) initBoxes.push(uuidv4());
 
     const [questionBoxes, setQuestionBoxes] = React.useState(initBoxes);
 

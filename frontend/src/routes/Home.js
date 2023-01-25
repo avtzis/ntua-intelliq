@@ -55,7 +55,7 @@ const Home = () => {
     <Container maxWidth='ms' sx={{paddingTop: '25px'}}>
       <Grid container spacing={4}>
         {cards.map((card) => (
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={4} key={card.title}>
             <Card sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
               <CardContent sx={{flexGrow: 1}}>
                 <Typography gutterBottom variant='h5'>
@@ -69,7 +69,9 @@ const Home = () => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button fullWidth size='large' theme={theme} variant='contained'>Take Survey</Button>
+                <Button fullWidth size='large' theme={theme} variant='contained' href='session'>
+                  Take Survey
+                </Button>
               </CardActions>
             </Card>
           </Grid>

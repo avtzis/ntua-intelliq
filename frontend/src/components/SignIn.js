@@ -13,16 +13,21 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
+import axios from 'axios';
 
 
 export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    axios.post('https://192.168.1.4:9103/intelliq_api/login', {
+      username: data.get('username'),
+      password: data.get('password')
+    }).then(response => {  //X-OBSERVATORY-AUTH
+      localStorage.setItem("token", response.data.token);
+      window.location.href = '/';
+    }).catch(err => console.error(err))
   };
 
   return (
@@ -48,10 +53,10 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
               autoFocus
             />
             <TextField

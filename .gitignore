@@ -4,3 +4,4 @@ api-backend/temp.js
 api-backend/routes/index.js
 api-backend/controllers/indexController.js
 data/admintoken.json
+frontend/node_modules

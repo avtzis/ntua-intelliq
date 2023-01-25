@@ -9,7 +9,9 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import Profile from './routes/Profile';
 import Create from './routes/Create';
-import Edit from './routes/Edit';
+//import Edit from './routes/Edit';
+import Session from './routes/Session';
+import Logout from './utilities/logoutUser';
 
 const router = createBrowserRouter([
     {
@@ -19,7 +21,8 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <Home />
-            },{
+            },
+            {
                 path: 'admin',
                 element: <Admintools />
             },
@@ -37,7 +40,7 @@ const router = createBrowserRouter([
             },
             {
                 path: 'session',
-                element: null
+                element: <Session />
             },
             {
                 path: 'register',
@@ -49,7 +52,11 @@ const router = createBrowserRouter([
             },
             {
                 path: 'surveys/edit',
-                element: <Edit />
+                element: null
+            },
+            {
+                path: 'logout',
+                element: <Logout />
             }
         ]
     }

@@ -2,7 +2,7 @@ import React from 'react'
 import { Autocomplete, TextField, Grid } from '@mui/material';
 
 const NextQuestionEdit = (props) => {
-    const {boxes, box, option} = props;
+    const {boxes, box} = props;
     const options = Array.from({length: boxes.length}, (_, i) => i + 1);
     options.push('end');
 
