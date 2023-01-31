@@ -68,8 +68,6 @@ exports.postAnswer = async (req, res) => {
     const answerID = req.body.answer.id;
     const answerContext = req.body.answer.context;
 
-    if(typeof answerID == 'undefined') return res.status(400).json({message: 'no answer'});
-
     const user = await User.findOne({where: {username}});
     const survey = await Questionnaire.findByPk(surveyID);
     if(!survey) return res.status(400).json({message: 'no such survey'});
@@ -82,18 +80,26 @@ exports.postAnswer = async (req, res) => {
     if(session.finished == true) return res.status(200).json({message: 'survey completed'});
     const currentQuestion = await session.getCurrentQuestion();
 
+    let nextQuestion;
     const answers = await currentQuestion.getAnswers({where: {id: answerID}});
-    if(!answers.length) return res.status(400).json({message: 'no such answer'});
+    if(!answers.length) {
+        if(currentQuestion.required === 'true') {
+            return res.status(400).json({message: 'no such answer'});
+        } else {
+            nextQuestion = await currentQuestion.getIfSkippedNextQuestion();
+        }
+    } else {
+        const answer = answers[0];
+        await session.addAnswer(answer);
+    
+        const uniqueAnswers = await session.getUniqueAnswers({where: {answerId: answerID}});
+        const uniqueAnswer = uniqueAnswers[0];
+        uniqueAnswer.context = answerContext;
+        await uniqueAnswer.save();
+    
+        nextQuestion = await answer.getNextQuestion();
+    }
 
-    const answer = answers[0];
-    await session.addAnswer(answer);
-
-    const uniqueAnswers = await session.getUniqueAnswers({where: {answerId: answerID}});
-    const uniqueAnswer = uniqueAnswers[0];
-    uniqueAnswer.context = answerContext;
-    await uniqueAnswer.save();
-
-    const nextQuestion = await answer.getNextQuestion();
     if(!nextQuestion) {
         session.finished = true;
         await session.save();

@@ -9,7 +9,7 @@ exports.register = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const name = req.body.name;
-    const surname = req.body.name;
+    const surname = req.body.surname;
 
     if(!(username && password)) 
         return res.status(402).json({message: 'not enough paramaters'});

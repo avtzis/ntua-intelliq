@@ -14,11 +14,12 @@ exports.createSurvey = async (req, res) => {
 
     const survey = await admin.createQuestionnaire({title, about});
 
-    for(const keyword of keywords) {
-        //const myKeyword = await Keyword.findOrCreate({where: {title: keyword}});
-        const myKeyword = await Keyword.findOne({where: {title: keyword}});
-        if(!myKeyword) await Keyword.create({title: keyword});
-        await survey.addKeyword(myKeyword);
+    if(keywords.length) {
+        for(const keyword of keywords) {
+            const myKeyword = await Keyword.findOne({where: {title: keyword}});
+            if(!myKeyword) await Keyword.create({title: keyword});
+            await survey.addKeyword(myKeyword);
+        }
     }
 
     for(const question of questions) {
@@ -28,24 +29,28 @@ exports.createSurvey = async (req, res) => {
             type: question.type,
             answerType: question.answerType
         });
+
         for(const answer of question.answers) {
             await myQuestion.createAnswer({title: answer.title});
         }
     }
 
-    let iQ = 0, iA = 0;
     const myQuestions = await survey.getQuestions();
-    for(const question of myQuestions) {
-        const myAnswers = await question.getAnswers();
-        iA = 0;
-        for(const answer of myAnswers) {
-            const nextQuestionIndex = Number(questions[iQ].answers[iA].nextQuestion);
-            if(nextQuestionIndex > iQ) {
-                await answer.setNextQuestion(myQuestions[nextQuestionIndex]);
+    for(let i in myQuestions) {
+        if(questions[i].nextQuestionIfSkipped) {
+            const nextQuestionIndex = Number(questions[i].nextQuestionIfSkipped);
+            if(nextQuestionIndex > i) {
+                await myQuestions[i].setIfSkippedNextQuestion(myQuestions[nextQuestionIndex]);
             }
-            iA++;
         }
-        iQ++;
+
+        const myAnswers = await myQuestions[i].getAnswers();
+        for(let j in myAnswers) {
+            const nextQuestionIndex = Number(questions[i].answers[j].nextQuestion);
+            if(nextQuestionIndex > i) {
+                await myAnswers[j].setNextQuestion(myQuestions[nextQuestionIndex]);
+            }
+        }
     }
 
     await survey.setFirstQuestion(myQuestions[0]);
@@ -115,15 +120,22 @@ exports.ownedSurveysLayout = async (req, res) => {
         include: {
             model: Question,
             attributes: ['title', 'type', 'required'],
-            include: {
-                model: Answer,
-                attributes: ['title'],
-                include: {
+            include: [
+                {
+                    model: Answer,
+                    attributes: ['title'],
+                    include: {
+                        model: Question,
+                        as: 'nextQuestion',
+                        attributes: ['title']
+                    }
+                },
+                {
                     model: Question,
-                    as: 'nextQuestion',
-                    attributes: ['title']
+                    as: 'ifSkippedNextQuestion',
+                    attributes: ['title'],
                 }
-            }
+            ]
         }
     });
     for(let i in unpublished) {
@@ -142,15 +154,22 @@ exports.ownedSurveysLayout = async (req, res) => {
         include: {
             model: Question,
             attributes: ['title', 'type', 'required'],
-            include: {
-                model: Answer,
-                attributes: ['title'],
-                include: {
+            include: [
+                {
+                    model: Answer,
+                    attributes: ['title'],
+                    include: {
+                        model: Question,
+                        as: 'nextQuestion',
+                        attributes: ['title']
+                    }
+                },
+                {
                     model: Question,
-                    as: 'nextQuestion',
-                    attributes: ['title']
+                    as: 'ifSkippedNextQuestion',
+                    attributes: ['title'],
                 }
-            }
+            ]
         },
     });
     for(let i in published) {

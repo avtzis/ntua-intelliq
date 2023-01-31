@@ -43,7 +43,6 @@ verifyDB = async () => {
 
 // Models
 const AdministratorModel = require('../models/administrator.js');
-//const ResearcherModel = require('../models/researcher.js');
 const QuestionnaireModel = require('../models/questionnaire.js');
 const QuestionModel = require('../models/question.js');
 const AnswerModel = require('../models/answer.js');
@@ -55,7 +54,6 @@ const TokenModel = require('../models/token.js');
 
 // Instances
 const Administrator = AdministratorModel(db, DataTypes);
-//const Researcher = ResearcherModel(db, DataTypes);
 const Questionnaire = QuestionnaireModel(db, DataTypes);
 const Question = QuestionModel(db, DataTypes);
 const Answer = AnswerModel(db, DataTypes);
@@ -104,14 +102,15 @@ User.hasOne(Token);
 Token.belongsTo(User);
 Token.belongsTo(Administrator);
 
-/* Session.hasOne(Token);
-Token.belongsTo(Session); */
-
 Questionnaire.belongsTo(Question, {as: 'firstQuestion', foreignKey: 'firstQuestionId'});
 Question.hasOne(Questionnaire, {as: 'firstQuestionInSurvey', foreignKey: 'firstQuestionId'});
 
 Question.hasMany(Session, {as: 'currentQuestionInSession', foreignKey: 'currentQuestionId'})
 Session.belongsTo(Question, {as: 'currentQuestion', foreignKey: 'currentQuestionId'});
+
+Question.belongsTo(Question, {as: 'ifSkippedNextQuestion', foreignKey: 'ifSkippedNextQuestionId'});
+Question.hasMany(Question, {as: 'originQuestion', foreignKey: 'ifSkippedNextQuestionId'});
+
 
 module.exports = {
     db,
