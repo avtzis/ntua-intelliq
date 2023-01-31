@@ -1,26 +1,28 @@
-const { User, Administrator, Researcher, Token } = require("../utilities/database");
+const { User, Administrator, Token, Questionnaire, Keyword } = require("../utilities/database");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const user = require("../models/user");
 
 exports.layout = (req, res) => {}
-
-exports.registerLayout = async (req, res) => {}
 
 exports.register = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
+    const name = req.body.name;
+    const surname = req.body.name;
 
     if(!(username && password)) 
         return res.status(402).json({message: 'not enough paramaters'});
 
     const someAdmin = await Administrator.findOne({where: {username}});
-    const someResearcher = await Researcher.findOne({where: {username}});
     const someUser = await User.findOne({where: {username}});
-    if(someAdmin || someResearcher || someUser) return res.status(400).json({message: 'username already exists'});
+    if(someAdmin || someUser) return res.status(400).json({message: 'username already exists'});
 
     User.create({
         username,
-        password
+        password,
+        name,
+        surname
     }).then(user => {
         res.status(201).json({
             message: "user successfully created",
@@ -30,8 +32,6 @@ exports.register = async (req, res) => {
     }).catch(err => res.status(500).json({message: 'internal server error', err}));
 }
 
-exports.loginLayout = (req, res) => {}
-
 exports.login = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -40,11 +40,10 @@ exports.login = async (req, res) => {
         return res.status(402).json({message: 'not enough paramaters'});
 
     const admin = await Administrator.findOne({where: {username}});
-    const researcher = await Researcher.findOne({where: {username}});
     const user = await User.findOne({where: {username}});
 
     if(admin) {
-        if(bcrypt.compare(password, admin.password)) {
+        if(await bcrypt.compare(password, admin.password)) {
             const token = jwt.sign({username}, 'secret');
             try {
                 await admin.createToken({token, username, role: 'admin'});
@@ -55,20 +54,8 @@ exports.login = async (req, res) => {
         }
     }
 
-    if(researcher) {
-        if(bcrypt.compare(password, researcher.password)) {
-            const token = jwt.sign({username}, 'secret');
-            try {
-                await researcher.createToken({token, username, role: 'researcher'});
-            } catch(err) {return res.status(400).json({message: 'already logged in'})}
-            return res.status(200).json({username, role: 'researcher', token});
-        } else {
-            return res.status(401).json({message: 'wrong credentials'});
-        }
-    }
-
     if(user) {
-        if(bcrypt.compare(password, user.password)) {
+        if(await bcrypt.compare(password, user.password)) {
             const token = jwt.sign({username}, 'secret');
             try {
                 await user.createToken({token, username, role: 'user'});
@@ -96,6 +83,36 @@ exports.logout = async (req, res) => {
             return res.status(200).json({message: 'logout successful'});
         }
     }
+}
+
+exports.verifyLogin = (req, res) => {
+    const username = req.user.username;
+    const role = req.role;
+
+    return res.status(200).json({
+        loggedIn: true,
+        username,
+        role
+    });
+}
+
+exports.getAllSurveys = async (req, res) => {
+    const surveys = await Questionnaire.findAll({
+        where: {published: true},
+        attributes: ['id', 'title', 'about'],
+        include: [
+            {
+                model: Administrator,
+                attributes: ['corporation']
+            },
+            {
+                model: Keyword,
+                attributes: ['title']
+            }
+        ]
+    });
+
+    return res.status(200).json(surveys);
 }
 
 exports.getSurvey = (req, res) => {}

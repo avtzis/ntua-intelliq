@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     type: {
       type: DataTypes.STRING
+    },
+    answerType: {
+      type: DataTypes.STRING,
+      defaultValue: 'open text'
     }
   });
 

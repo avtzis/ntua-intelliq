@@ -6,22 +6,21 @@ const surveyController = require('../controllers/surveyController');
 
 // Middleware
 const authenticate = require('../middleware/authenticate');
-const authResearcher = require('../middleware/authorizeResearcher');
+const authAdmin = require('../middleware/authorizeAdmin');
 
 // Router
 const router = express.Router();
 
 // Requests
-/* router.get('/', authenticate, authResearcher, surveyController.ownedSurveysLayout);
-router.get('/survey/:id', authenticate, authResearcher, surveyController.getSurveyInfo); */
+router.get('/', authenticate, authAdmin, surveyController.ownedSurveysLayout);
+router.get('/survey/:id', authenticate, authAdmin, surveyController.getSurveyInfo);
 //download format??
-// router.post('/survey/:id/update', authenticate, authResearcher, surveyController.updateSurvey);
-// router.post('/survey/:id/delete', authenticate, authResearcher, surveyController.deleteSurvey);
-//router.get('/survey/:id/answers', authenticate, authResearcher, surveyController.getSurveyAnswers);
-//filters?? graphs??
-router.post('/survey/:id/publish', authenticate, authResearcher, surveyController.publishSurvey);
+// router.post('/survey/:id/update', authenticate, authAdmin, surveyController.updateSurvey);
+router.post('/survey/:id/delete', authenticate, authAdmin, surveyController.deleteSurvey);
+router.get('/survey/:id/answers', authenticate, authAdmin, surveyController.getSurveyAnswers);
+router.post('/survey/:id/publish', authenticate, authAdmin, surveyController.publishSurvey);
+router.post('/survey/:id/withdraw', authenticate, authAdmin, surveyController.withdrawSurvey);
 
-//router.get('/createSurvey', authenticate, authResearcher, surveyController.createSurveyLayout);
-router.post('/createSurvey', authenticate, authResearcher, surveyController.createSurvey);
+router.post('/createSurvey', authenticate, authAdmin, surveyController.createSurvey);
 
 module.exports = router;

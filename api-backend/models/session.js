@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     finished: {
       type: DataTypes.STRING,
-      default: 'false'
+      defaultValue: 'false'
     },
     submitted: {
       type: DataTypes.STRING,
-      default: 'false'
+      defaultValue: 'false'
     }
   });
 

@@ -35,7 +35,7 @@ const db = new Sequelize('intelliQ', 'user', 'user', {
 verifyDB = async () => {
     try {
         await db.authenticate();
-        await db.sync({force: false});
+        await db.sync({force: false, alter: true});
         //await Administrator.create({username: 'avtzis', password: 'nokiak123'});
         console.log('Connection with the database has been established successfully');
     } catch(err) {console.error('Unable to connect to the database:', err);}
@@ -43,7 +43,7 @@ verifyDB = async () => {
 
 // Models
 const AdministratorModel = require('../models/administrator.js');
-const ResearcherModel = require('../models/researcher.js');
+//const ResearcherModel = require('../models/researcher.js');
 const QuestionnaireModel = require('../models/questionnaire.js');
 const QuestionModel = require('../models/question.js');
 const AnswerModel = require('../models/answer.js');
@@ -55,7 +55,7 @@ const TokenModel = require('../models/token.js');
 
 // Instances
 const Administrator = AdministratorModel(db, DataTypes);
-const Researcher = ResearcherModel(db, DataTypes);
+//const Researcher = ResearcherModel(db, DataTypes);
 const Questionnaire = QuestionnaireModel(db, DataTypes);
 const Question = QuestionModel(db, DataTypes);
 const Answer = AnswerModel(db, DataTypes);
@@ -66,8 +66,8 @@ const Keyword = KeywordModel(db, DataTypes);
 const Token = TokenModel(db, DataTypes);
 
 // Associations
-Researcher.hasMany(Questionnaire);
-Questionnaire.belongsTo(Researcher, {onDelete: 'CASCADE'});
+Administrator.hasMany(Questionnaire);
+Questionnaire.belongsTo(Administrator, {onDelete: 'CASCADE'});
 
 Questionnaire.hasMany(Question);
 Question.belongsTo(Questionnaire, {onDelete: 'CASCADE'});
@@ -100,10 +100,8 @@ Questionnaire.belongsToMany(Keyword, {through: 'Survey_Keyword'});
 Keyword.belongsToMany(Questionnaire, {through: 'Survey_Keyword'});
 
 Administrator.hasOne(Token);
-Researcher.hasOne(Token);
 User.hasOne(Token);
 Token.belongsTo(User);
-Token.belongsTo(Researcher);
 Token.belongsTo(Administrator);
 
 /* Session.hasOne(Token);
@@ -120,7 +118,7 @@ module.exports = {
     dbconnection,
     verifyDB,
     Administrator,
-    Researcher,
+    //Researcher,
     Questionnaire,
     Question,
     Answer,
