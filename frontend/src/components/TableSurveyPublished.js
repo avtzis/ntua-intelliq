@@ -8,139 +8,10 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import DeleteIcon from '@mui/icons-material/Delete';
 import theme from '../theme';
 import GetAppIcon from '@mui/icons-material/GetApp';
-
-const rows = [
-  {
-    title: 'Survey 1',
-    qCount: 3,
-    aCount: 7,
-    uaCount: 19,
-    questions: [
-      {
-        qTitle: 'question 1',
-        qType: 'profile',
-        qRequired: false,
-        qaCount: 2,
-        answers: [
-          {
-            aTitle: 'answer 1',
-            aType: 'options',
-            nextQuestion: 'question 2',
-            unique: 9
-          },
-          {
-            aTitle: 'answer 2',
-            aType: 'options',
-            nextQuestion: 'question 2',
-            unique: 9
-          }
-        ]
-      },
-      {
-        qTitle: 'question 2',
-        qType: 'question',
-        qRequired: true,
-        qaCount: 1,
-        answers: [
-          {
-            aTitle: '<*>',
-            aType: 'options',
-            nextQuestion: 'question 3',
-            unique: 9
-          }
-        ]
-      },
-      {
-        qTitle: 'question 3',
-        qType: 'question',
-        qRequired: true,
-        qaCount: 2,
-        answers: [
-          {
-            aTitle: 'answer 1',
-            aType: 'options',
-            nextQuestion: 'end',
-            unique: 10
-          },
-          {
-            aTitle: 'answer 2',
-            aType: 'options',
-            nextQuestion: 'end',
-            unique: 9
-          }
-        ]
-      }
-    ]
-  },
-  {
-    title: 'Survey 2',
-    qCount: 3,
-    aCount: 7,
-    uaCount: 19,
-    questions: [
-      {
-        qTitle: 'question 1',
-        qType: 'profile',
-        qRequired: false,
-        qaCount: 2,
-        answers: [
-          {
-            aTitle: 'answer 1',
-            aType: 'options',
-            nextQuestion: 'question 2',
-            unique: 9
-          },
-          {
-            aTitle: 'answer 2',
-            aType: 'options',
-            nextQuestion: 'question 2',
-            unique: 9
-          }
-        ]
-      },
-      {
-        qTitle: 'question 2',
-        qType: 'question',
-        qRequired: true,
-        qaCount: 2,
-        answers: [
-          {
-            aTitle: 'answer 1',
-            aType: 'options',
-            nextQuestion: 'question 3',
-            unique: 9
-          },
-          {
-            aTitle: 'answer 2',
-            aType: 'options',
-            nextQuestion: 'question 3',
-            unique: 10
-          }
-        ]
-      },
-      {
-        qTitle: 'question 3',
-        qType: 'question',
-        qRequired: true,
-        qaCount: 2,
-        answers: [
-          {
-            aTitle: 'answer 1',
-            aType: 'options',
-            nextQuestion: 'end',
-            unique: 10
-          },
-          {
-            aTitle: 'answer 2',
-            aType: 'options',
-            nextQuestion: 'end',
-            unique: 9
-          }
-        ]
-      }
-    ]
-  }
-]
+import axios from 'axios';
+import api from '../utilities/api';
+import MyAlert from './MyAlert';
+import fileDownload from 'js-file-download';
 
 const RowTwo = (props) => {
   const {question} = props;
@@ -154,10 +25,11 @@ const RowTwo = (props) => {
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
-        <TableCell component='th' scope='row'>{question.qTitle}</TableCell>
-        <TableCell align='right'>{question.qType}</TableCell>
-        <TableCell align='right'>{question.qRequired ? <CheckIcon /> : <CloseIcon />}</TableCell>
+        <TableCell component='th' scope='row'>{question.title}</TableCell>
+        <TableCell align='right'>{question.type}</TableCell>
+        <TableCell align='right'>{question.required === 'true' ? <CheckIcon /> : <CloseIcon />}</TableCell>
         <TableCell align='right'>{question.qaCount}</TableCell>
+        <TableCell align='right'>{question.ifSkippedNextQuestion ? question.ifSkippedNextQuestion.title : (question.required === 'true' ? 'n/a' : 'end')}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -175,9 +47,9 @@ const RowTwo = (props) => {
                 </TableHead>
                 <TableBody>
                   {question.answers.map((answer) => (
-                    <TableRow key={answer.aTitle}>
-                      <TableCell component='th' scope='row'>{answer.aTitle}</TableCell>
-                      <TableCell align='right'>{answer.nextQuestion}</TableCell>
+                    <TableRow key={answer.title}>
+                      <TableCell component='th' scope='row'>{answer.title}</TableCell>
+                      <TableCell align='right'>{answer.nextQuestion ? answer.nextQuestion.title : 'end'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -190,12 +62,49 @@ const RowTwo = (props) => {
   )
 }
 
+let severity = '';
+let message = '';
+
 const RowOne = (props) => {
-  const {row} = props;
+  const {survey} = props;
   const [open, setOpen] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+
+  const handleClose = () => setOpenAlert(false);
+
+  const handleWithdraw = event => {
+    event.preventDefault();
+    axios.post(api + '/ownedsurveys/survey/' + survey.id + '/withdraw')
+    .then(response => {
+      console.log(response.data.message);
+      severity = 'success';
+      message = response.data.message;
+      setOpenAlert(true);
+      window.location.reload();
+    }).catch(err => {
+      console.error(err.response.data.message);
+      severity = 'error';
+      message = err.response.data.message;
+      setOpenAlert(true);
+    });
+  }
+
+  const handleExport = event => {
+    event.preventDefault();
+    axios.get(api + '/ownedsurveys/survey/' + survey.id, {responseType: 'blob'})
+    .then(response => {
+      fileDownload(response.data, 'exported_survey.json');
+    }).catch(err => {
+      console.error(err.response.data.message);
+      severity = 'error';
+      message = err.response.data.message;
+      setOpenAlert(true);
+    });
+  }
 
   return (
     <React.Fragment>
+      <MyAlert open={openAlert} handleClose={handleClose} severity={severity} message={message} />
       <TableRow sx={{'& > *': {borderBottom: 'unset'}}}>
         <TableCell>
           <IconButton aria-label='expand row' size='small' onClick={() => setOpen(!open)}>
@@ -203,18 +112,18 @@ const RowOne = (props) => {
           </IconButton>
         </TableCell>
         <TableCell component='th' scope='row'>
-          {row.title}
+          {survey.title}
         </TableCell>
-        <TableCell align='right'>{row.qCount}</TableCell>
-        <TableCell align='right'>{row.aCount}</TableCell>
+        <TableCell align='right'>{survey.qCount}</TableCell>
+        <TableCell align='right'>{survey.aCount}</TableCell>
         <TableCell align='right'>
-          <Button theme={theme} startIcon={<EqualizerIcon />}>Graph</Button>
-        </TableCell>
-        <TableCell align='right'>
-          <Button theme={theme} startIcon={<GetAppIcon />}>Export</Button>
+          <Button theme={theme} startIcon={<EqualizerIcon />} href={'/surveys/' + survey.id + '/graph'}>Graph</Button>
         </TableCell>
         <TableCell align='right'>
-          <Button theme={theme} startIcon={<DeleteIcon />}>Withdraw</Button>
+          <Button theme={theme} startIcon={<GetAppIcon />} onClick={handleExport}>Export</Button>
+        </TableCell>
+        <TableCell align='right'>
+          <Button theme={theme} startIcon={<DeleteIcon />} onClick={handleWithdraw}>Withdraw</Button>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -232,10 +141,11 @@ const RowOne = (props) => {
                     <TableCell align='right'>Type</TableCell>
                     <TableCell align='right'>Required</TableCell>
                     <TableCell align='right'>Options</TableCell>
+                    <TableCell align='right'>If Skipped</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.questions.map((question) => (
+                  {survey.questions.map((question) => (
                     <RowTwo key={question.title} question={question} />
                   ))}
                 </TableBody>
@@ -249,6 +159,14 @@ const RowOne = (props) => {
 }
 
 const TableOne = () => {
+  const [surveys, setSurveys] = React.useState([]);
+
+  React.useEffect(() => {
+    axios.get(api + '/ownedsurveys')
+    .then(response => setSurveys([...response.data.published]))
+    .catch(err => console.error(err));
+  }, []);
+
   return (
     <Table aria-label='collapsible table'>
       <TableHead>
@@ -263,8 +181,8 @@ const TableOne = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows.map((row) => (
-          <RowOne key={row.title} row={row} />
+        {surveys.map((survey) => (
+          <RowOne key={survey.id} survey={survey} />
         ))}
       </TableBody>
     </Table>

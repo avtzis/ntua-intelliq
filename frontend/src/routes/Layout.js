@@ -18,12 +18,8 @@ import theme from '../theme';
 
 // Icons
 import Memory from '@mui/icons-material/MemorySharp';
-
-const pages = [
-  {name: 'Home', link: '/'},
-  {name: 'Surveys', link: '/surveys'},
-  {name: 'Admin', link: '/admin'},
-]
+import logoutUser from '../utilities/logoutUser';
+import api from '../utilities/api';
 
 const login = [
   {name: 'Login', link: '/login'},
@@ -31,22 +27,25 @@ const login = [
 ]
 
 const loggedin = [
-  {name: 'Profile', link: '/profile'},
-  {name: 'Logout', link: '/logout'},
+  {name: 'Profile', link: '/profile', handleClick: null},
+  {name: 'Logout', link: null, handleClick: logoutUser},
 ]
 
 const Layout = () => {
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [role, setRole] = React.useState('');
 
   const token = localStorage.getItem("token");
   axios.defaults.headers.common['X-OBSERVATORY-AUTH'] = token;
   if(token) {
-    axios.get('https://192.168.1.4:9103/intelliq_api/verifyLogin')
+    axios.get(api + '/verifyLogin')
     .then(response => {
       setLoggedIn(response.data.loggedIn);
+      setRole(response.data.role);
     }).catch(err => {
       setLoggedIn(false);
-      console.error(err);
+      setRole('');
+      console.error(err.response.data.message);
     });
   }
 
@@ -73,15 +72,19 @@ const Layout = () => {
           </Typography>
           
           <Box sx={{flexGrow: 1}}>
-            {pages.map((page) => (
-              <Button 
-              key={page.name}
-              href={page.link}
-              sx={{color: 'inherit'}}
-              >
-                {page.name}
-              </Button>
-            ))}
+            <Button href='/' sx={{color: 'inherit'}}>Home</Button>
+            {
+              role === 'admin' ?
+                <React.Fragment>
+                  <Button href='/surveys' sx={{color: 'inherit'}}>Surveys</Button>
+                  <Button href='/admin' sx={{color: 'inherit'}}>Admin</Button>
+                </React.Fragment>
+              :
+                role === 'user' ?
+                  <Button href='/mysurveys' sx={{color: 'inherit'}}>My Surveys</Button>
+                :
+                  <React.Fragment />
+            }
           </Box>
           <Box>
             {loggedIn ?
@@ -89,6 +92,7 @@ const Layout = () => {
                 <Button 
                 key={page.name}
                 href={page.link}
+                onClick={page.handleClick}
                 sx={{color: 'inherit', marginLeft: 'auto'}}
                 >
                   {page.name}

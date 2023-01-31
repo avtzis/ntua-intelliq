@@ -11,7 +11,10 @@ import Profile from './routes/Profile';
 import Create from './routes/Create';
 //import Edit from './routes/Edit';
 import Session from './routes/Session';
+import ThankYou from './routes/ThankYou';
 import Logout from './utilities/logoutUser';
+import Graph from './routes/Graph';
+//import axios from 'axios';
 
 const router = createBrowserRouter([
     {
@@ -39,7 +42,7 @@ const router = createBrowserRouter([
                 element: <Login />
             },
             {
-                path: 'session',
+                path: 'session/:surveyID',
                 element: <Session />
             },
             {
@@ -56,7 +59,15 @@ const router = createBrowserRouter([
             },
             {
                 path: 'logout',
-                element: <Logout />
+                action: Logout
+            },
+            {
+                path: '/session/thankyou',
+                element: <ThankYou />
+            },
+            {
+                path: '/surveys/:surveyID/graph',
+                element: <Graph />
             }
         ]
     }

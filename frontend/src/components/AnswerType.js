@@ -1,14 +1,14 @@
 import React from 'react'
-import { Autocomplete, TextField, Grid, Button, Container, Paper, Box, IconButton, Stack } from '@mui/material';
+import { TextField, Grid, Button, Container, Paper, Box, IconButton, Stack, MenuItem } from '@mui/material';
 import NextQuestion from './NextQuestion';
 import theme from '../theme';
 import ClearIcon from '@mui/icons-material/Clear';
 
-const AnswerTypeOptions = ['Options', 'Textbox'];
+const AnswerTypeOptions = ['Options', 'Open Text'];
 
 const AnswerType = (props) => {
   const {boxes, box} = props;
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState('');
   const [answerBoxes, setAnswerBoxes] = React.useState([]);
 
   const handleAddAnswer = () => {
@@ -26,21 +26,25 @@ const AnswerType = (props) => {
   return (
     <React.Fragment>
         <Grid item xs={12} sm={6}>
-            <Autocomplete 
+            <TextField 
                 value={value}
-                onChange={(event, newValue) => {setValue(newValue)}}
-                disablePortal
-                openOnFocus
-                disableClearable
+                onChange={(event) => {setValue(event.target.value)}}
+                name={'question' + (box-1) + '-answer-type'}
                 id='answer-type'
-                options={AnswerTypeOptions}
-                sx={{/* width: 300 */}}
-                renderInput={(params) => <TextField {...params} label='Answer Type' />}
-            />
+                label='Answer Type'
+                select
+                fullWidth
+            >
+                {AnswerTypeOptions.map(option => (
+                    <MenuItem key={option} value={option}>
+                        {option}
+                    </MenuItem>
+                ))}
+            </TextField>
         </Grid>
         {
-            value === 'Textbox' ? 
-                <NextQuestion boxes={boxes} box={box} /> :
+            value === 'Open Text' ? 
+                <NextQuestion boxes={boxes} box={box} ansId={0} /> :
                 value === 'Options' ?
                     <Grid item xs={12}>
                         <Container maxWidth='md'>
@@ -55,7 +59,7 @@ const AnswerType = (props) => {
                                                             <ClearIcon />
                                                         </IconButton>
                                                         <TextField
-                                                            name='aTitle'
+                                                            name={'question' + (box-1) + '-answer' + (boxKey-1) + '-title'}
                                                             id='aTitle'
                                                             label='Title'
                                                             fullWidth
@@ -64,13 +68,13 @@ const AnswerType = (props) => {
                                                         />
                                                     </Stack>
                                                 </Grid>
-                                                <NextQuestion boxes={boxes} box={box} />
+                                                <NextQuestion boxes={boxes} box={box} ansId={boxKey-1} />
                                             </React.Fragment>
                                         )
                                     }
                                     <Grid item xs={12}>                                        
-                                        <Box sx={{alignItems: 'flex-end', justifyContent: 'flex-end', display: 'flex', /* pt: 2, mx: 2 */}}>
-                                            <Button variant='outlined' theme={theme} onClick={handleAddAnswer} /* fullWidth */>
+                                        <Box sx={{alignItems: 'flex-end', justifyContent: 'flex-end', display: 'flex', pl: 5 /* pt: 2, mx: 2 */}}>
+                                            <Button variant='outlined' theme={theme} onClick={handleAddAnswer} fullWidth>
                                                 Add Option
                                             </Button>
                                         </Box>

@@ -3,8 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -13,19 +11,44 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
+import axios from 'axios';
+import MyAlert from './MyAlert';
+import api from '../utilities/api';
+
+let severity = '';
+let message = '';
 
 export default function SignUp() {
+  const [openAlert, setOpenAlert] = React.useState(false);
+
+  const handleClose = () => setOpenAlert(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
+    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    axios.post(api + '/register', {
+      username: data.get('username'),
       password: data.get('password'),
+      name: data.get('firstName'),
+      surname: data.get('lastName')
+    }).then(response => {
+      console.log(response.data.message);
+      severity = 'success';
+      message = response.data.message;
+      setOpenAlert(true);
+      window.location.href = '/login';
+    }).catch(err => {
+      console.error(err.response.data.message);
+      severity = 'error';
+      message = err.response.data.message;
+      setOpenAlert(true);
     });
   };
 
   return (
     <ThemeProvider theme={theme}>
+      <MyAlert open={openAlert} handleClose={handleClose} severity={severity} message={message} />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -69,10 +92,10 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -84,12 +107,6 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
                 />
               </Grid>
             </Grid>

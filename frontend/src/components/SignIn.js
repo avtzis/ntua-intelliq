@@ -14,24 +14,38 @@ import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '../theme';
 import axios from 'axios';
+import api from '../utilities/api';
+import MyAlert from './MyAlert';
 
+let severity = '';
+let message = '';
 
 export default function SignIn() {
+  const [openAlert, setOpenAlert] = React.useState(false);
+
+  const handleClose = () => setOpenAlert(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-    axios.post('https://192.168.1.4:9103/intelliq_api/login', {
+    axios.post(api + '/login', {
       username: data.get('username'),
       password: data.get('password')
-    }).then(response => {  //X-OBSERVATORY-AUTH
+    }).then(response => {
       localStorage.setItem("token", response.data.token);
       window.location.href = '/';
-    }).catch(err => console.error(err))
+    }).catch(err => {
+      console.error(err.response.data.message);
+      severity = 'error';
+      message = err.response.data.message;
+      setOpenAlert(true);
+    });
   };
 
   return (
     <ThemeProvider theme={theme}>
+      <MyAlert open={openAlert} handleClose={handleClose} severity={severity} message={message} />
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
