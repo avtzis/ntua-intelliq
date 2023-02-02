@@ -1,104 +1,145 @@
 import React from 'react'
-import { Container, CssBaseline, Paper, ThemeProvider, Typography, Grid, TextField, Box, Button, FormControlLabel, Checkbox, Autocomplete, Stack, IconButton } from '@mui/material'
+import { Container, CssBaseline, Paper, ThemeProvider, Typography, Grid, TextField, Box, Button } from '@mui/material'
 import theme from '../theme'
-import AnswerTypeEdit from '../components/AnswerTypeEdit'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ClearIcon from '@mui/icons-material/Clear';
-import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import api from '../utilities/api'
+import MyAlert from '../components/MyAlert';
+import { useParams } from 'react-router-dom';
+import QuestionBoxEdit from '../components/QuestionBoxEdit';
 
-const survey = {
-    title: 'Survey Test',
-    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis a massa iaculis, efficitur enim sit amet, ultricies lorem. Fusce nunc diam, laoreet nec pretium vel, vehicula ut felis. Duis tincidunt est urna, vitae gravida neque tristique a. Quisque sagittis ultrices odio, at rutrum nisi dapibus eu. Vivamus posuere enim eros, vitae tincidunt est accumsan blandit. Sed mollis sed tellus et porttitor.',
-    keywords: 'test1, test2',
-    questions: [
-        {
-            qTitle: 'Test Question 1',
-            type: 'Profile',
-            required: false,
-            aType: 'Textbox',
-            options: [
-                {
-                    opttxt: '<*>',
-                    nextQuestion: 2
-                }
-            ]
-        },
-        {
-            qTitle: 'Test Question 2',
-            type: 'Question',
-            required: true,
-            aType: 'Options',
-            options: [
-                {
-                    opttxt: 'Test Option 1',
-                    nextQuestion: 'end'
-                },
-                {
-                    opttxt: 'Test Option 2',
-                    nextQuestion: 'end'
-                }
-            ]
-        }
-    ]
-}
+let severity = '';
+let message = '';
 
 const Edit = () => {
-    let initBoxes = [];
-    //for(let i in survey.questions) initBoxes.push(uuidv4());
+    const params = useParams();
+    const surveyID = params.surveyID;
+    const [questionBoxes, setQuestionBoxes] = React.useState([]);
+    const [openAlert, setOpenAlert] = React.useState(false);
 
-    const [questionBoxes, setQuestionBoxes] = React.useState(initBoxes);
+    const [title, setTitle] = React.useState('');
+    const [about, setAbout] = React.useState('');
+    const [keywords, setKeywords] = React.useState('');
 
-    const handleAdd = () => {
-        const key =  uuidv4();
-        let boxes = [...questionBoxes];
-        boxes.push(key);
-        setQuestionBoxes(boxes);
-    }
-    const handleDelete = (key) => {
-        const boxes = questionBoxes.filter(id => id !== key);
-        setQuestionBoxes(boxes);
-    }
-    const handleUp = (key) => {
-        const index = questionBoxes.indexOf(key);
-        if(index > 0) {
-            let boxes1 = questionBoxes.slice(0, index);
-            let boxes2 = questionBoxes.slice(index);
-    
-            const elem1 = boxes1.pop();
-            const elem2 = boxes2.shift();
-    
-            boxes1.push(elem2);
-            boxes2.unshift(elem1);
-            
-            const boxes = boxes1.concat(boxes2);
-            setQuestionBoxes(boxes);
+    React.useEffect(() => {
+        axios.get(api + '/ownedsurveys/survey/' + surveyID)
+        .then(response => {
+            //console.log(response.data);
+            setTitle(response.data.title);
+            setAbout(response.data.about);
+
+            let myKeywords = '';
+            for(let i in response.data.keywords) {
+                myKeywords += response.data.keywords[i].title;
+                if(i < response.data.keywords.length - 1) myKeywords += ',';
+            }
+            setKeywords(myKeywords);
+            setQuestionBoxes([...response.data.questions])
+        }).catch(err => console.error(err.response.data.message));
+    }, [surveyID]);
+
+    const handleClose = () => setOpenAlert(false);
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        //console.log(data);
+
+        let keywords = data.get('keywords').toLowerCase().split(',');
+        for(let i in keywords) keywords[i] = keywords[i].trim();
+        if(keywords[0] === '') keywords = [];
+
+        let questions = [];
+        for(let i=0; true; ++i) {
+            const qTitle = data.get('question' + i + '-title');
+            if(!qTitle) break;
+
+            let qType = data.get('question' + i + '-type').toLowerCase();
+            if(!qType) qType = 'question';
+
+            let required = data.get('question' + i + '-required');
+            required = required === 'on' ? 'true' : 'false';
+
+            let nextQuestionIfSkipped = null;
+            if(required === 'false') {
+                nextQuestionIfSkipped = data.get('question' + i + '-next-if-skipped');
+                if(nextQuestionIfSkipped === 'end') nextQuestionIfSkipped = '0';
+                else nextQuestionIfSkipped--;
+            }
+
+            let answerType = questionBoxes[i].answerType;
+
+            let answers = [];
+            for(let j=0; true; ++j) {
+                if(answerType !== 'options') {
+                    const aTitle = '<open string>';
+
+                    let nextQuestion = data.get('question' + i + '-answer0-next');
+                    if(!nextQuestion || nextQuestion === 'end') nextQuestion = '0';
+                    else nextQuestion--;
+
+                    answers.push({
+                        title: aTitle,
+                        nextQuestion
+                    });
+                    break;
+                } else {
+                    const aTitle = data.get('question' + i + '-answer' + j + '-title');
+                    if(!aTitle) break;
+
+                    let nextQuestion = data.get('question' + i + '-answer' + j + '-next');
+                    if(nextQuestion === 'end') nextQuestion = '0';
+                    else nextQuestion--;
+
+                    answers.push({
+                        title: aTitle,
+                        nextQuestion
+                    });
+                }
+
+            }
+
+            questions.push({
+                title: qTitle,
+                type: qType,
+                required,
+                answerType,
+                nextQuestionIfSkipped,
+                answers
+            });
         }
-    }
-    const handleDown = (key) => {
-        const index = questionBoxes.indexOf(key);
-        if(index > -1 && index < questionBoxes.length - 1) {
-            let boxes1 = questionBoxes.slice(0, index + 1);
-            let boxes2 = questionBoxes.slice(index + 1);
-    
-            const elem1 = boxes1.pop();
-            const elem2 = boxes2.shift();
-    
-            boxes1.push(elem2);
-            boxes2.unshift(elem1);
-            
-            const boxes = boxes1.concat(boxes2);
-            setQuestionBoxes(boxes);
+
+        let myData = {
+            questionnaireTitle: data.get('title'),
+            about: data.get('about'),
+            keywords,
+            questions
         }
+
+        //console.log(myData);
+        axios.post(api + '/ownedsurveys/survey/' + surveyID + '/update', myData)
+        .then(response => {
+            console.log(response.data.message);
+            severity = 'success';
+            message = response.data.message;
+            setOpenAlert(true);
+            //window.location.href='/surveys';
+        }).catch(err => {
+            console.error(err.response.data.message);
+            severity = 'error';
+            message = err.response.data.message;
+            setOpenAlert(true);
+        });
     }
 
   return (
     <ThemeProvider theme={theme}>
         <CssBaseline />
+        <MyAlert open={openAlert} handleClose={handleClose} severity={severity} message={message} />
+        <form onSubmit={handleSubmit}>
             <Container component='main' maxWidth="md" sx={{ mb: 4 }}>
                 <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
                     <Typography component="h1" variant="h4" align="center">
-                        Create New Survey
+                        Edit Survey
                     </Typography>
                     <Grid container spacing={3} sx={{pt: '15px'}}>
                         <Grid item xs={12}>
@@ -107,9 +148,9 @@ const Edit = () => {
                                 id='title'
                                 label='Title'
                                 fullWidth
-                                autoFocus
                                 required
-                                value={survey.title}
+                                value={title}
+                                onChange={(event) => setTitle(event.target.value)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -120,7 +161,8 @@ const Edit = () => {
                                 fullWidth
                                 multiline
                                 rows={4}
-                                value={survey.about}
+                                value={about}
+                                onChange={event => setAbout(event.target.value)}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -129,74 +171,28 @@ const Edit = () => {
                                 id='keywords'
                                 label='Keywords'
                                 fullWidth
-                                value={survey.keywords}
+                                helperText='Seperated by commas'
+                                value={keywords}
+                                onChange={event => setKeywords(event.target.value)}
                             />
                         </Grid>
                     </Grid>
                 </Paper>
             </Container>
-            {questionBoxes.map((box) => 
-                <Container key={box} component='main' maxWidth="md" sx={{ mb: 4 }}>
-                    <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-                        <Stack justifyContent='space-between' direction='row'>
-                            <Box />
-                            <Typography variant='h5' align='center'>
-                                {'Question ' + (questionBoxes.findIndex((id) => id === box) + 1)}
-                            </Typography>
-                            <Box sx={{display: 'flex', justifyContent: 'flex-end', alignContent: 'flex-end'/* , '& button': {m: 1} */}}>
-                                <IconButton aria-label='move-up' onClick={() => handleUp(box)}>
-                                    <ArrowUpwardIcon />
-                                </IconButton>
-                                <IconButton aria-label='move-down' onClick={() => handleDown(box)}>
-                                    <ArrowDownwardIcon />
-                                </IconButton>
-                                <IconButton aria-label='delete' onClick={() => handleDelete(box)}>
-                                    <ClearIcon />
-                                </IconButton>
-                            </Box>
-                        </Stack>
-                        <Grid container spacing={3} sx={{pt: '15px'}}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    name='qTitle'
-                                    id='qTitle'
-                                    label='Title'
-                                    fullWidth
-                                    autoFocus
-                                    required
-                                    value={survey.questions[questionBoxes.findIndex((id) => id === box)].qTitle}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Autocomplete 
-                                    disablePortal
-                                    openOnFocus
-                                    disableClearable
-                                    id='type'
-                                    options={['Question', 'Profile']}
-                                    sx={{width: 300}}
-                                    renderInput={(params) => <TextField {...params} label='Type' />}
-                                    value={survey.questions[questionBoxes.findIndex((id) => id === box)].type}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <FormControlLabel control={<Checkbox checked={survey.questions[questionBoxes.findIndex((id) => id === box)].required}/>} label='Required' />
-                            </Grid>
-                            <AnswerTypeEdit boxes={questionBoxes} box={(questionBoxes.findIndex((id) => id === box) + 1)} question={survey.questions[questionBoxes.findIndex((id) => id === box)]}/>
-                        </Grid>
-                    </Paper>
-                </Container>
+            {questionBoxes.map((box) =>
+                <QuestionBoxEdit questionBoxes={questionBoxes} box={box} key={box.id} />
             )}
             <Container maxWidth='md'>
                 <Box sx={{alignItems: 'flex-end', justifyContent: 'flex-end', display: 'flex', '& button': {m: 1}}}>
-                    <Button variant='outlined' theme={theme} onClick={handleAdd}>
+                    <Button variant='outlined' theme={theme} disabled>
                         Add Question
                     </Button>
-                    <Button variant='contained' theme={theme} onClick={null}>
+                    <Button variant='contained' theme={theme} type='submit'>
                         Done
                     </Button>
                 </Box>
             </Container>
+        </form>
     </ThemeProvider>
   )
 }

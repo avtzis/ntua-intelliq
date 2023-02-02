@@ -24,7 +24,7 @@ const Session = () => {
   const [value, setValue] = React.useState('');
   const [finished, setFinished] = React.useState(false);
   const [question, setQuestion] = React.useState(blank);
-  const [previous, setPrevious] = React.useState(false);
+  const [first, setFirst] = React.useState(true);
 
   React.useEffect(() => {
     if(flag) {
@@ -34,6 +34,7 @@ const Session = () => {
         if(response.data.submitted) window.location.href = '/session/thankyou';
         if(response.data.finished) setFinished(true);
         else setQuestion(response.data);
+        if(response.data.firstQuestion) setFirst(true);
       }).catch(err => console.error(err.response.data.message));
     }
   }, [surveyID]);
@@ -59,7 +60,7 @@ const Session = () => {
       setQuestion(blank);
       if(!response.data.finished) setQuestion(response.data);
       else setFinished(true);
-      if(!previous) setPrevious(true);
+      if(!response.data.firstQuestion) setFirst(false);
     }).catch(err => console.error(err.response.data.message));
   }
 
@@ -82,13 +83,19 @@ const Session = () => {
       setQuestion(blank);
       if(!response.data.finished) setQuestion(response.data);
       else setFinished(true);
-      if(!previous) setPrevious(true);
+      if(!response.data.firstQuestion) setFirst(false);
     }).catch(err => console.error(err.response.data.message));
   }
 
   const handlePrevious = event => {
     event.preventDefault();
-    //
+    axios.post(api + '/session/' + surveyID + '/postPrevious')
+    .then(response => {
+      setFinished(false);
+      setQuestion(blank);
+      setQuestion(response.data);
+      if(response.data.firstQuestion) setFirst(true);
+    }).catch(err => console.error(err.response.data.message));
   }
 
   return (
@@ -124,7 +131,7 @@ const Session = () => {
         </Container>
         <Container maxWidth='md' sx={{pt: 2}}>
           <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-            <Button startIcon={<ArrowBackIosNewIcon />} variant='outlined' size='large' disabled={!previous} onClick={handlePrevious}>Previous Question</Button>
+            <Button startIcon={<ArrowBackIosNewIcon />} variant='outlined' size='large' disabled={first} onClick={handlePrevious}>Previous Question</Button>
             {
               finished ?
                 <Button variant='contained' size='large' onClick={handleSubmit}>Submit Survey</Button> :                 

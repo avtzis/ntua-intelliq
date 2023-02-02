@@ -34,6 +34,7 @@ const AnswerType = (props) => {
                 label='Answer Type'
                 select
                 fullWidth
+                required
             >
                 {AnswerTypeOptions.map(option => (
                     <MenuItem key={option} value={option}>

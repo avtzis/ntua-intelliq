@@ -109,7 +109,7 @@ const RowOne = (props) => {
 
   const handleExport = event => {
     event.preventDefault();
-    axios.get(api + '/ownedsurveys/survey/' + survey.id, {responseType: 'blob'})
+    axios.get(api + '/ownedsurveys/survey/' + survey.id + '/export', {responseType: 'blob'})
     .then(response => {
       fileDownload(response.data, 'exported_survey.json');
     }).catch(err => {
@@ -141,7 +141,7 @@ const RowOne = (props) => {
           <Button theme={theme} startIcon={<GetAppIcon />} onClick={handleExport}>Export</Button>
         </TableCell>
         <TableCell align='right'>
-          <Button theme={theme} startIcon={<EditIcon />} href='/surveys/edit'>Edit</Button>
+          <Button theme={theme} startIcon={<EditIcon />} href={'/surveys/' + survey.id + '/edit'}>Edit</Button>
         </TableCell>
         <TableCell align='right'>
           <Button theme={theme} startIcon={<DeleteForeverIcon />} onClick={handleDelete}>Delete</Button>

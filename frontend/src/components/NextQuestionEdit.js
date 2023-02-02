@@ -1,25 +1,31 @@
 import React from 'react'
-import { Autocomplete, TextField, Grid } from '@mui/material';
+import { TextField, Grid, MenuItem } from '@mui/material';
 
 const NextQuestionEdit = (props) => {
-    const {boxes, box} = props;
+    const {boxes, box, ansId, valueNext} = props;
+    const [value, setValue] = React.useState(valueNext);
     const options = Array.from({length: boxes.length}, (_, i) => i + 1);
     options.push('end');
 
   return (
     <React.Fragment>
         <Grid item xs={12} sm={6}>
-            <Autocomplete 
-                value={/* option.nextQuestion */ 1}
+            <TextField 
                 required
-                disablePortal
-                id='type'
-                options={options}
-                sx={{/* width: 300 */}}
-                renderInput={(params) => <TextField {...params} label='Next Question' />}
-                getOptionDisabled={(option) => option <= box}
-                openOnFocus
-            />
+                id='next-question'
+                name={'question' + (box-1) + '-answer' + (ansId) + '-next'}
+                label='Next Question'
+                fullWidth
+                select
+                value={value < 1 ? 'end' : value}
+                onChange={event => setValue(event.target.value)}
+            >
+              {options.map(option => (
+                <MenuItem key={option} value={option} disabled={option <= box ? true : false}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
         </Grid>
     </React.Fragment>
   )

@@ -93,7 +93,6 @@ const Create = () => {
             }
 
             let answerType = data.get('question' + i + '-answer-type').toLowerCase();
-            if(!answerType) answerType = 'options';
 
             let answers = [];
             for(let j=0; true; ++j) {
@@ -149,7 +148,7 @@ const Create = () => {
             severity = 'success';
             message = response.data.message;
             setOpenAlert(true);
-            //window.location.href='/surveys';
+            window.location.href='/surveys';
         }).catch(err => {
             console.error(err.response.data.message);
             severity = 'error';

@@ -91,7 +91,7 @@ const RowOne = (props) => {
 
   const handleExport = event => {
     event.preventDefault();
-    axios.get(api + '/ownedsurveys/survey/' + survey.id, {responseType: 'blob'})
+    axios.get(api + '/ownedsurveys/survey/' + survey.id + '/export', {responseType: 'blob'})
     .then(response => {
       fileDownload(response.data, 'exported_survey.json');
     }).catch(err => {

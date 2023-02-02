@@ -9,11 +9,12 @@ import Login from './routes/Login';
 import Register from './routes/Register';
 import Profile from './routes/Profile';
 import Create from './routes/Create';
-//import Edit from './routes/Edit';
+import Edit from './routes/Edit';
 import Session from './routes/Session';
 import ThankYou from './routes/ThankYou';
 import Logout from './utilities/logoutUser';
 import Graph from './routes/Graph';
+import MySurveys from './routes/MySurveys'
 //import axios from 'axios';
 
 const router = createBrowserRouter([
@@ -54,8 +55,8 @@ const router = createBrowserRouter([
                 element: <Create />
             },
             {
-                path: 'surveys/edit',
-                element: null
+                path: 'surveys/:surveyID/edit',
+                element: <Edit />
             },
             {
                 path: 'logout',
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
             {
                 path: '/surveys/:surveyID/graph',
                 element: <Graph />
+            },
+            {
+                path: '/mySurveys',
+                element: <MySurveys />
             }
         ]
     }
