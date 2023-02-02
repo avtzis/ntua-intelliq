@@ -14,10 +14,7 @@ const router = express.Router();
 router.get('/:questionnaireID', authenticate, sessionController.newSession);
 router.get('/:questionnaireID/currentQuestion', authenticate, sessionController.getCurrentQuestion);
 router.post('/:questionnaireID/submitAnswer', authenticate, sessionController.postAnswer);
-
-/* router.post('/:questionnaireID/prevQuestion', authenticate, sessionController.postPrevQuestion);
-router.get('/:questionnaireID/prevQuestion', authenticate, sessionController.getPrevQuestion); */
-
+router.post('/:questionnaireID/postPrevious', authenticate, sessionController.postPrevious);
 router.post('/:questionnaireID/submitSurvey', authenticate, sessionController.postSubmit);
 
 module.exports = router;

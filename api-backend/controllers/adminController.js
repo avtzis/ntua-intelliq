@@ -100,35 +100,7 @@ exports.userMod = async (req, res) => {
         const user = await User.findOne({where: {username}});
         if(user) await user.destroy();
 
-        const researcher = await Researcher.findOne({where: {username}});
-        if(researcher) await researcher.destroy();
-
         await Administrator.create({username, password});
-
-        return res.status(200).json({message: 'admin created successfully'})
-    }
-}
-
-exports.partnerMod = async (req, res) => {
-    const username = req.params.username;
-    const password = req.params.password;
-
-    if(!(username && password)) return res.status(400).json({message: 'parameters missing'})
-
-    const researcher = await Researcher.findOne({where: {username}});
-    if(researcher) {
-        researcher.password = password;
-        await researcher.save();
-
-        return res.status(200).json({message: 'password has been successfully changed'});
-    } else {
-        const user = await User.findOne({where: {username}});
-        if(user) await user.destroy();
-
-        const admin = await admin.findOne({where: {username}});
-        if(admin) return res.status(400).json({message: 'user is admin'});
-
-        await Researcher.create({username, password});
 
         return res.status(200).json({message: 'admin created successfully'})
     }
@@ -136,7 +108,6 @@ exports.partnerMod = async (req, res) => {
 
 exports.getUser = async (req, res) => {
     const username = req.params.username;
-    if(!username) return res.status(400).json({message: 'parameters missing'});
 
     const user = await User.findOne({where: {username}});
     if(!user) return res.status(400).json({message: 'no user'});

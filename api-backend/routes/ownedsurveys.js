@@ -13,9 +13,12 @@ const router = express.Router();
 
 // Requests
 router.get('/', authenticate, authAdmin, surveyController.ownedSurveysLayout);
-router.get('/survey/:id', authenticate, authAdmin, surveyController.getSurveyInfo);
+router.get('/survey/:id/export', authenticate, authAdmin, surveyController.getSurveyInfo);
+router.get('/exportPublished', authenticate, authAdmin, surveyController.getSurveysPublished);
+router.get('/exportUnpublished', authenticate, authAdmin, surveyController.getSurveysUnpublished);
 //download format??
-// router.post('/survey/:id/update', authenticate, authAdmin, surveyController.updateSurvey);
+router.get('/survey/:id', authenticate, authAdmin, surveyController.getSurvey);
+router.post('/survey/:id/update', authenticate, authAdmin, surveyController.updateSurvey);
 router.post('/survey/:id/delete', authenticate, authAdmin, surveyController.deleteSurvey);
 router.get('/survey/:id/answers', authenticate, authAdmin, surveyController.getSurveyAnswers);
 router.post('/survey/:id/publish', authenticate, authAdmin, surveyController.publishSurvey);

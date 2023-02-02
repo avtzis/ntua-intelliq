@@ -9,6 +9,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     context: {
       type: DataTypes.STRING
+    },
+    skipped: {
+      type: DataTypes.STRING,
+      defaultValue: 'false'
+    },
+    questionID: {
+      type: DataTypes.INTEGER
     }
   });
 

@@ -285,3 +285,178 @@ exports.getSurveyInfo = async (req, res) => {
 
     return res.status(200).json(data);
 }
+
+exports.getSurvey = async (req, res) => {
+    const username = req.user.username;
+    const surveyID = req.params.id;
+
+    const admin = await Administrator.findOne({where: {username}});
+    const surveys = await admin.getQuestionnaires({where: {id: surveyID}});
+    if(!surveys.length) return res.status(401).json({message: 'unauthorized request to survey'});
+
+    const survey = await Questionnaire.findOne({
+        where: {id: surveyID},
+        attributes: ['id', 'title', 'about'],
+        include: [
+            {
+                model: Keyword,
+                attributes: ['id', 'title']
+            },
+            {
+                model: Question,
+                attributes: ['id', 'title', 'type', 'required', 'answerType'],
+                include: [
+                    {
+                        model: Answer,
+                        attributes: ['id', 'title'],
+                        include: {
+                            model: Question,
+                            as: 'nextQuestion',
+                            attributes: ['id', 'title']
+                        }
+                    },
+                    {
+                        model: Question,
+                        as: 'ifSkippedNextQuestion',
+                        attributes: ['id', 'title']
+                    }
+                ]
+            }
+        ]
+    });
+
+    return res.status(200).json(survey);
+}
+
+exports.updateSurvey = async (req, res) => {
+    const username = req.user.username;
+    const surveyID = req.params.id;
+
+    const admin = await Administrator.findOne({where: {username}});
+    const surveys = await admin.getQuestionnaires({where: {id: surveyID}});
+    if(!surveys.length) return res.status(401).json({message: 'unauthorized request to survey'});
+
+    const survey = surveys[0];
+    const title = req.body.questionnaireTitle;
+    const about = req.body.about;
+    const keywords = req.body.keywords;
+    const questions = req.body.questions;
+
+    if(title) survey.title = title;
+    if(about) survey.about = about;
+
+    if(keywords.length) {
+        for(const keyword of keywords) {
+            const myKeyword = await Keyword.findOne({where: {title: keyword}});
+            if(!myKeyword) await Keyword.create({title: keyword});
+            const keywordExists = await survey.getKeywords({where: {title: keyword}});
+            if(keywordExists.length === 0) await survey.addKeyword(myKeyword);
+        }
+    }
+
+    
+    const myQuestions = await survey.getQuestions();
+    for(let i in myQuestions) {
+        myQuestions[i].title = questions[i].title;
+        myQuestions[i].type = questions[i].type;
+        myQuestions[i].required = questions[i].required;
+
+        const myAnswers = await myQuestions[i].getAnswers();
+        for(let j in myAnswers) {
+            myAnswers[j].title = questions[i].answers[j].title;
+            await myAnswers[j].save();
+        }
+        await myQuestions[i].save();
+    }
+
+    for(let i in myQuestions) {
+        if(questions[i].nextQuestionIfSkipped) {
+            const nextQuestionIndex = Number(questions[i].nextQuestionIfSkipped);
+            if(nextQuestionIndex > i) {
+                await myQuestions[i].setIfSkippedNextQuestion(myQuestions[nextQuestionIndex]);
+            }
+        }
+
+        const myAnswers = await myQuestions[i].getAnswers();
+        for(let j in myAnswers) {
+            const nextQuestionIndex = Number(questions[i].answers[j].nextQuestion);
+            if(nextQuestionIndex > i) {
+                await myAnswers[j].setNextQuestion(myQuestions[nextQuestionIndex]);
+            }
+        }
+    }
+
+    return res.status(201).json({
+        message: 'survey successfully updated', 
+        id: survey.id,
+        title: survey.title,
+    })
+}
+
+exports.getSurveysPublished = async (req, res) => {
+    const username = req.user.username;
+
+    const admin = await Administrator.findOne({where: {username}});
+    const surveys = await admin.getQuestionnaires({where: {published: true}});
+    if(!surveys.length) return res.status(401).json({message: 'no surveys'});
+
+    let data = [];
+    for(const survey of surveys) {
+        const questions = await survey.getQuestions();
+        const keywords = await survey.getKeywords();
+    
+        let p_index = 0;
+        let q_index = 0;
+        const myData = {
+            questionnaireID: 'QQ' + (survey.id > 99 ? survey.id : ('0' + (survey.id > 9 ? survey.id : ('0' + survey.id)))),
+            questionnaireTitle: survey.title,
+            keywords: keywords.map(keyword => keyword.title),
+            questions: questions.map(question => {
+                return {
+                    qID: question.type === 'question' ? ('Q' + (q_index > 9 ? q_index++ : ('0' + q_index++))) : ('P' + (p_index > 9 ? p_index++ : ('0' + p_index++))),
+                    qText: question.title,
+                    required: question.required.toUpperCase(),
+                    type: question.type
+                }
+            })
+        };
+
+        data.push(myData);
+    }
+
+    return res.status(200).json(data);
+}
+
+exports.getSurveysUnpublished = async (req, res) => {
+    const username = req.user.username;
+
+    const admin = await Administrator.findOne({where: {username}});
+    const surveys = await admin.getQuestionnaires({where: {published: false}});
+    if(!surveys.length) return res.status(401).json({message: 'no surveys'});
+
+    let data = [];
+    for(const survey of surveys) {
+        const questions = await survey.getQuestions();
+        const keywords = await survey.getKeywords();
+    
+        let p_index = 0;
+        let q_index = 0;
+        const myData = {
+            questionnaireID: 'QQ' + (survey.id > 99 ? survey.id : ('0' + (survey.id > 9 ? survey.id : ('0' + survey.id)))),
+            questionnaireTitle: survey.title,
+            keywords: keywords.map(keyword => keyword.title),
+            questions: questions.map(question => {
+                return {
+                    qID: question.type === 'question' ? ('Q' + (q_index > 9 ? q_index++ : ('0' + q_index++))) : ('P' + (p_index > 9 ? p_index++ : ('0' + p_index++))),
+                    qText: question.title,
+                    required: question.required.toUpperCase(),
+                    type: question.type
+                }
+            })
+        };
+
+        data.push(myData);
+    }
+
+    return res.status(200).json(data);
+}

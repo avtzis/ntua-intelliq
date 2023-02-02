@@ -17,7 +17,6 @@ router.post('/questionnaire_upd', authenticate, authAdmin, adminController.postS
 router.post('/resetall', authenticate, authAdmin, adminController.serverReset);
 router.post('/resetq/:questionnaireID', authenticate, authAdmin, adminController.surveyReset);
 router.post('/usermod/:username/:password', authenticate, authAdmin, adminController.userMod);
-router.post('/partnermod/:username/:password', authenticate, authAdmin, adminController.partnerMod);
 router.get('/users/:username', authenticate, authAdmin, adminController.getUser);
 
 module.exports = router;

@@ -13,5 +13,6 @@ const router = express.Router();
 // Requests
 router.get('/', authenticate, authUser, sessionController.mySurveysLayout);
 router.get('/survey/:id', authenticate, authUser, sessionController.getSession);
+router.get('/survey/:id/export', authenticate, authUser, sessionController.getSessionExport);
 
 module.exports = router;
