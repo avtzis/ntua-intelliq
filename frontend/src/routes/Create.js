@@ -13,7 +13,7 @@ import MyAlert from '../components/MyAlert';
 
 const types = ['Question', 'Profile'];
 
-let severity = '';
+let severity = 'success';
 let message = '';
 
 const Create = () => {
@@ -68,7 +68,7 @@ const Create = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        //console.log(data);
+        console.log(data);
 
         let keywords = data.get('keywords').toLowerCase().split(',');
         for(let i in keywords) keywords[i] = keywords[i].trim();
@@ -148,7 +148,7 @@ const Create = () => {
             severity = 'success';
             message = response.data.message;
             setOpenAlert(true);
-            window.location.href='/surveys';
+            //window.location.href='/surveys';
         }).catch(err => {
             console.error(err.response.data.message);
             severity = 'error';

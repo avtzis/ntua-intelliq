@@ -17,13 +17,19 @@ import axios from 'axios';
 import api from '../utilities/api';
 import MyAlert from './MyAlert';
 
-let severity = '';
+let severity = 'success';
 let message = '';
 
 export default function SignIn() {
   const [openAlert, setOpenAlert] = React.useState(false);
 
   const handleClose = () => setOpenAlert(false);
+
+  const handleForgot = () => {
+    severity = 'info';
+    message = 'too bad';
+    setOpenAlert(true);
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -97,7 +103,7 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="#" variant="body2" onClick={handleForgot}>
                   Forgot password?
                 </Link>
               </Grid>

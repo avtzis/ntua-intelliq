@@ -15,7 +15,7 @@ import axios from 'axios';
 import MyAlert from './MyAlert';
 import api from '../utilities/api';
 
-let severity = '';
+let severity = 'success';
 let message = '';
 
 export default function SignUp() {
@@ -71,7 +71,6 @@ export default function SignUp() {
                 <TextField
                   autoComplete="given-name"
                   name="firstName"
-                  required
                   fullWidth
                   id="firstName"
                   label="First Name"
@@ -80,7 +79,6 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
                   fullWidth
                   id="lastName"
                   label="Last Name"

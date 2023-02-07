@@ -15,12 +15,13 @@ import ThankYou from './routes/ThankYou';
 import Logout from './utilities/logoutUser';
 import Graph from './routes/Graph';
 import MySurveys from './routes/MySurveys'
-//import axios from 'axios';
+import Error from './routes/Error'
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <Layout />, // <Element />
+        element: <Layout />,
+        errorElement: <Error />,
         children: [
             {
                 path: '/',

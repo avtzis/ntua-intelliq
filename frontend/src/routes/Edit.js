@@ -7,7 +7,7 @@ import MyAlert from '../components/MyAlert';
 import { useParams } from 'react-router-dom';
 import QuestionBoxEdit from '../components/QuestionBoxEdit';
 
-let severity = '';
+let severity = 'success';
 let message = '';
 
 const Edit = () => {
@@ -42,7 +42,7 @@ const Edit = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        //console.log(data);
+        console.log(data);
 
         let keywords = data.get('keywords').toLowerCase().split(',');
         for(let i in keywords) keywords[i] = keywords[i].trim();
@@ -115,14 +115,14 @@ const Edit = () => {
             questions
         }
 
-        //console.log(myData);
+        console.log(myData);
         axios.post(api + '/ownedsurveys/survey/' + surveyID + '/update', myData)
         .then(response => {
             console.log(response.data.message);
             severity = 'success';
             message = response.data.message;
             setOpenAlert(true);
-            //window.location.href='/surveys';
+            window.location.href='/surveys';
         }).catch(err => {
             console.error(err.response.data.message);
             severity = 'error';
