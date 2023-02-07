@@ -21,8 +21,8 @@ const connection = mysql.createConnection(
 
 // Create database if it does not exist
 connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
-    console.log(results);
-    console.error(err);
+    if(err) console.error(err);
+    else console.log(results);
 });
 
 // Connect sequelize to database
@@ -65,19 +65,19 @@ const Token = TokenModel(db, DataTypes);
 
 // Associations
 Administrator.hasMany(Questionnaire);
-Questionnaire.belongsTo(Administrator, {onDelete: 'CASCADE'});
+Questionnaire.belongsTo(Administrator/* , {onDelete: 'CASCADE'} */);
 
 Questionnaire.hasMany(Question);
-Question.belongsTo(Questionnaire, {onDelete: 'CASCADE'});
+Question.belongsTo(Questionnaire/* , {onDelete: 'CASCADE'} */);
 
 Question.hasMany(Answer);
-Answer.belongsTo(Question, {onDelete: 'CASCADE'});
+Answer.belongsTo(Question/* , {onDelete: 'CASCADE'} */);
 
 Question.hasMany(Answer, {as: 'originAnswer', foreignKey: 'nextQuestionId'});
 Answer.belongsTo(Question, {as: 'nextQuestion', foreignKey: 'nextQuestionId'});
 
-Answer.hasMany(UniqueAnswer, {onDelete: 'SET NULL'});
-UniqueAnswer.belongsTo(Answer, {onDelete: 'SET NULL'});
+Answer.hasMany(UniqueAnswer/* , {onDelete: 'SET NULL'} */);
+UniqueAnswer.belongsTo(Answer/* , {onDelete: 'SET NULL'} */);
 
 User.hasMany(Session);
 Session.belongsTo(User);
@@ -97,8 +97,8 @@ Answer.belongsToMany(Session, {through: UniqueAnswer});
 Questionnaire.belongsToMany(Keyword, {through: 'Survey_Keyword'});
 Keyword.belongsToMany(Questionnaire, {through: 'Survey_Keyword'});
 
-Administrator.hasOne(Token);
-User.hasOne(Token);
+Administrator.hasMany(Token);
+User.hasMany(Token);
 Token.belongsTo(User);
 Token.belongsTo(Administrator);
 
@@ -117,7 +117,6 @@ module.exports = {
     dbconnection,
     verifyDB,
     Administrator,
-    //Researcher,
     Questionnaire,
     Question,
     Answer,

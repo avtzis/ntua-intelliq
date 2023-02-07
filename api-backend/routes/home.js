@@ -2,11 +2,10 @@ const express = require('express');
 
 // Controllers
 const mainController = require('../controllers/mainController');
+const basicController = require('../controllers/basicController')
 
 // Middleware
 const authenticate = require('../middleware/authenticate');
-const authResearcher = require('../middleware/authorizeResearcher');
-const authUser = require('../middleware/authorizeUser');
 
 // Router
 const router = express.Router();
@@ -19,10 +18,10 @@ router.post('/logout', mainController.logout);
 router.get('/verifyLogin', authenticate, mainController.verifyLogin);
 router.get('/surveys', mainController.getAllSurveys);
 
-/* router.get('/questionnaire/:questionnaireID', authenticate, authResearcher, mainController.getSurvey);
-router.get('/question/:questionnaireID/:questionID', authenticate, authResearcher, mainController.getQuestion);
-router.post('/doanswer/:questionnaireID/:questionID/:session/:optionID', authenticate, authUser, mainController.postAnswer);
-router.get('/getsessionanswers/:questionnaireID/:session', authenticate, authUser, mainController.getSessionAnswers);
-router.get('/getquestionanswers/:questionnaireID/:questionID', authenticate, authResearcher, mainController.getAnswers); */
+router.get('/questionnaire/:questionnaireID', authenticate, basicController.getSurvey);
+router.get('/question/:questionnaireID/:questionID', authenticate, basicController.getQuestion);
+router.post('/doanswer/:questionnaireID/:questionID/:session/:optionID', authenticate, basicController.postAnswer);
+router.get('/getsessionanswers/:questionnaireID/:session', authenticate, basicController.getSessionAnswers);
+router.get('/getquestionanswers/:questionnaireID/:questionID', authenticate, basicController.getAnswers);
 
 module.exports = router;

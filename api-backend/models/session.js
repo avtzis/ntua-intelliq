@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     submitted: {
       type: DataTypes.STRING,
       defaultValue: 'false'
+    },
+    ses: {
+      type: DataTypes.STRING
     }
   });
 

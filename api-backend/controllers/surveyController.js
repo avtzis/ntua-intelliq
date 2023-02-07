@@ -14,12 +14,10 @@ exports.createSurvey = async (req, res) => {
 
     const survey = await admin.createQuestionnaire({title, about});
 
-    if(keywords.length) {
-        for(const keyword of keywords) {
-            const myKeyword = await Keyword.findOne({where: {title: keyword}});
-            if(!myKeyword) await Keyword.create({title: keyword});
-            await survey.addKeyword(myKeyword);
-        }
+    for(const keyword of keywords) {
+        let myKeyword = await Keyword.findOne({where: {title: keyword}});
+        if(!myKeyword) myKeyword = await Keyword.create({title: keyword});
+        await survey.addKeyword(myKeyword);
     }
 
     for(const question of questions) {
@@ -345,12 +343,12 @@ exports.updateSurvey = async (req, res) => {
     if(title) survey.title = title;
     if(about) survey.about = about;
 
-    if(keywords.length) {
-        for(const keyword of keywords) {
-            const myKeyword = await Keyword.findOne({where: {title: keyword}});
-            if(!myKeyword) await Keyword.create({title: keyword});
-            const keywordExists = await survey.getKeywords({where: {title: keyword}});
-            if(keywordExists.length === 0) await survey.addKeyword(myKeyword);
+    for(const keyword of keywords) {
+        const keywordExists = await survey.getKeywords({where: {title: keyword}});
+        if(keywordExists.length === 0) {
+            let myKeyword = await Keyword.findOne({where: {title: keyword}});
+            if(!myKeyword) myKeyword = await Keyword.create({title: keyword});
+            await survey.addKeyword(myKeyword);
         }
     }
 

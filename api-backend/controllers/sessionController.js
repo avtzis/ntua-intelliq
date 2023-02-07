@@ -6,7 +6,7 @@ exports.newSession = async (req, res, next) => {
 
     const user = await User.findOne({where: {username}});
     const survey = await Questionnaire.findByPk(surveyID);
-    if(!survey) return res.status(400).json({message: 'no such survey'}); 
+    if(!survey || !survey.published) return res.status(400).json({message: 'no such survey'}); 
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
     if(!sessions.length) {
@@ -27,7 +27,7 @@ exports.getCurrentQuestion = async (req, res) => {
 
     const user = await User.findOne({where: {username}});
     const survey = await Questionnaire.findByPk(surveyID);
-    if(!survey) return res.status(400).json({message: 'so such survey'});
+    if(!survey || !survey.published) return res.status(400).json({message: 'so such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
     if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
@@ -72,7 +72,7 @@ exports.postAnswer = async (req, res) => {
 
     const user = await User.findOne({where: {username}});
     const survey = await Questionnaire.findByPk(surveyID);
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey || !survey.published) return res.status(400).json({message: 'no such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
     if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
@@ -144,6 +144,7 @@ exports.mySurveysLayout = async (req, res) => {
         include: [
             {
                 model: Questionnaire,
+                where: {published: true},
                 include: Question
             },
             {

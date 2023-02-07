@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     answerType: {
       type: DataTypes.STRING,
-      defaultValue: 'open text'
+      defaultValue: 'options'
+    },
+    qID: {
+      type: DataTypes.STRING
     }
   });
 

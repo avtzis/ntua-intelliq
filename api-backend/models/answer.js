@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: {
       type: DataTypes.STRING
+    },
+    optID: {
+      type: DataTypes.STRING
+    },
+    nextqID: {
+      type: DataTypes.STRING
     }
   });
 
