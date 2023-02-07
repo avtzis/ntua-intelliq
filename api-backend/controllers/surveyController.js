@@ -1,4 +1,3 @@
-const { Sequelize } = require("sequelize");
 const { Keyword, Administrator, Question, Answer, Questionnaire, Session, UniqueAnswer } = require("../utilities/database");
 
 exports.createSurvey = async (req, res) => {
@@ -75,7 +74,7 @@ exports.publishSurvey = async (req, res) => {
     survey.published = true;
     await survey.save();
 
-    return res.status(200).json({message: 'survey has been successfully published'});
+    return res.status(201).json({message: 'survey has been successfully published'});
 }
 
 exports.withdrawSurvey = async (req, res) => {
@@ -90,7 +89,7 @@ exports.withdrawSurvey = async (req, res) => {
     survey.published = false;
     await survey.save();
 
-    return res.status(200).json({message: 'survey has been successfully withdrawn'});
+    return res.status(201).json({message: 'survey has been successfully withdrawn'});
 }
 
 exports.deleteSurvey = async (req, res) => {

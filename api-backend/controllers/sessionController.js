@@ -27,10 +27,10 @@ exports.getCurrentQuestion = async (req, res) => {
 
     const user = await User.findOne({where: {username}});
     const survey = await Questionnaire.findByPk(surveyID);
-    if(!survey || !survey.published) return res.status(400).json({message: 'so such survey'});
+    if(!survey || !survey.published) return res.status(402).json({message: 'so such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
-    if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
+    if(!sessions.length) return res.status(400).json({message: 'survey not started yet'});
     
     const session = sessions[0];
     if(session.submitted == true) return res.status(200).json({
@@ -75,11 +75,11 @@ exports.postAnswer = async (req, res) => {
     if(!survey || !survey.published) return res.status(400).json({message: 'no such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
-    if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
+    if(!sessions.length) return res.status(400).json({message: 'survey not started yet'});
     
     const session = sessions[0];
-    if(session.submitted == true) return res.status(200).json({message: 'survey already submitted'});
-    if(session.finished == true) return res.status(200).json({message: 'survey completed'});
+    if(session.submitted == true) return res.status(400).json({message: 'survey already submitted'});
+    if(session.finished == true) return res.status(400).json({message: 'survey completed'});
     const currentQuestion = await session.getCurrentQuestion();
 
     let nextQuestion;
@@ -123,16 +123,16 @@ exports.postSubmit = async (req, res) => {
     if(!survey) return res.status(400).json({message: 'no such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
-    if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
+    if(!sessions.length) return res.status(400).json({message: 'survey not started yet'});
 
     const session = sessions[0];
-    if(session.submitted == true) return res.status(200).json({message: 'survey already submitted'});
+    if(session.submitted == true) return res.status(400).json({message: 'survey already submitted'});
     if(session.finished != true) return res.status(400).json({message: 'survey not completed yet'});
     
     session.submitted = true;
     await session.save();
 
-    return res.status(200).json({message: 'Survey submitted. Thank you for your participation!'});
+    return res.status(201).json({message: 'Survey submitted. Thank you for your participation!'});
 }
 
 exports.mySurveysLayout = async (req, res) => {
@@ -201,7 +201,7 @@ exports.getSessionExport = async (req, res) => {
             }
         ]
     });
-    if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
+    if(!sessions.length) return res.status(400).json({message: 'survey not started yet'});
     const session = sessions[0];
 
     let p_index = 0;
@@ -234,10 +234,10 @@ exports.postPrevious = async (req, res) => {
     if(!survey) return res.status(400).json({message: 'no such survey'});
 
     const sessions = await user.getSessions({where: {questionnaireId: surveyID}});
-    if(!sessions.length) return res.status(401).json({message: 'survey not started yet'});
+    if(!sessions.length) return res.status(400).json({message: 'survey not started yet'});
     
     const session = sessions[0];
-    if(session.submitted == true) return res.status(200).json({message: 'survey already submitted'});
+    if(session.submitted == true) return res.status(400).json({message: 'survey already submitted'});
 
     const lastQuestionID = await UniqueAnswer.max('questionID', {where: {sessionId: session.id}});
     const lastAnswer = await UniqueAnswer.findOne({

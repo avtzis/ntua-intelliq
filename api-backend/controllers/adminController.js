@@ -2,11 +2,6 @@ const { db, dbconnection, Answer, Keyword, Question, Questionnaire, Session, Tok
 const { Op } = require('sequelize');
 const busboy = require('busboy');
 
-exports.layout = (req, res) => {
-    console.log(req.file);
-    return res.status(200).json({message: 'hi'});
-}
-
 exports.getHealthCheck = async (req, res) => {
     try {
         await db.authenticate();
@@ -82,7 +77,7 @@ exports.postSurvey = async (req, res) => {
     });
 
     bb.on('close', () => {
-        res.status(200).json({message: 'ok'});
+        res.status(201).json({message: 'ok'});
     });
 
     bb.on('error', error => {
@@ -129,14 +124,14 @@ exports.userMod = async (req, res) => {
         admin.password = password;
         await admin.save();
 
-        return res.status(200).json({message: 'password has been successfully changed'});
+        return res.status(201).json({message: 'password has been successfully changed'});
     } else {
         const user = await User.findOne({where: {username}});
         if(user) await user.destroy();
 
         await Administrator.create({username, password});
 
-        return res.status(200).json({message: 'admin created successfully'})
+        return res.status(201).json({message: 'admin created successfully'})
     }
 }
 
@@ -147,7 +142,7 @@ exports.getUser = async (req, res) => {
     let user = await User.findOne({where: {username}});
     if(!user) {
         user = await Administrator.findOne({where: {username}});
-        if(!user) return res.status(400).json({message: 'no user'});
+        if(!user) return res.status(402).json({message: 'no user'});
     }
 
     return res.status(200).json({user});
@@ -167,5 +162,5 @@ exports.updateCorp = async (req, res) => {
     admin.corporation = corporation;
     await admin.save();
 
-    return res.status(200).json({message: 'info updated successfully'});
+    return res.status(201).json({message: 'info updated successfully'});
 }

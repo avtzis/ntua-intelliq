@@ -11,7 +11,7 @@ const authenticate = require('../middleware/authenticate');
 const router = express.Router();
 
 // Requests
-router.get('/', mainController.layout); //list available calls?
+router.get('/', mainController.layout);
 router.post('/register', mainController.register);
 router.post('/login', mainController.login);
 router.post('/logout', mainController.logout);

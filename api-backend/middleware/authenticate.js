@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
                 console.error(err);
                 return res.status(500).json(err);
             })
-            return res.status(403).json({message: 'invalid token'});
+            return res.status(401).json({message: 'invalid token'});
         } else {
             Token.findOne({where: {token}}).then(myToken => {
                 if(myToken) {
@@ -25,7 +25,7 @@ module.exports = (req, res, next) => {
                     req.role = myToken.role;
                     next();
                 } else {
-                    res.status(403).json({message: 'token destroyed'});
+                    res.status(401).json({message: 'token destroyed'});
                 }
             }).catch(err => {
                 console.error(err);

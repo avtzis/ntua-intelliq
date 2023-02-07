@@ -41,5 +41,5 @@ exports.updateProfile = async (req, res) => {
 
     await user.save();
 
-    return res.status(200).json({message: 'personal info updated successfully'});
+    return res.status(201).json({message: 'personal info updated successfully'});
 }

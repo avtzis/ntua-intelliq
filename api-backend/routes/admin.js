@@ -11,7 +11,6 @@ const authAdmin = require('../middleware/authorizeAdmin');
 const router = express.Router();
 
 // Requests
-//router.get('/', adminController.layout);
 router.get('/healthcheck', authenticate, authAdmin, adminController.getHealthCheck);
 router.post('/questionnaire_upd', authenticate, authAdmin, adminController.postSurvey);
 router.post('/resetall', authenticate, authAdmin, adminController.serverReset);

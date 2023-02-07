@@ -13,7 +13,7 @@ exports.register = async (req, res) => {
     const surname = req.body.surname;
 
     if(!(username && password)) 
-        return res.status(402).json({message: 'not enough paramaters'});
+        return res.status(400).json({message: 'not enough paramaters'});
 
     const someAdmin = await Administrator.findOne({where: {username}});
     const someUser = await User.findOne({where: {username}});
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
     const password = req.body.password;
     const myToken = req.header('X-OBSERVATORY-AUTH');
 
-    if(!(username && password)) return res.status(402).json({message: 'not enough paramaters'});
+    if(!(username && password)) return res.status(400).json({message: 'not enough paramaters'});
     
     const admin = await Administrator.findOne({where: {username}});
     if(admin) {
@@ -54,7 +54,7 @@ exports.login = async (req, res) => {
             } catch(err) {return res.status(500).json({message: 'internal server error', err})}
             return res.status(200).json({username, role: 'admin', token, message: 'login successful'});
         } else {
-            return res.status(401).json({message: 'wrong credentials'});
+            return res.status(400).json({message: 'wrong credentials'});
         }
     }
     
@@ -66,17 +66,17 @@ exports.login = async (req, res) => {
         }
 
         if(await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({username}, 'secret');
+            const token = jwt.sign({username}, 'secret', {expiresIn: '9h'});
             try {
                 await user.createToken({token, username, role: 'user'});
             } catch(err) {return res.status(500).json({message: 'internal server error'})}
             return res.status(200).json({username, role: 'user', token, message: 'login successful'});
         } else {
-            return res.status(401).json({message: 'wrong credentials'});
+            return res.status(400).json({message: 'wrong credentials'});
         }
     }
 
-    else return res.status(401).json({message: 'no such user'});
+    else return res.status(400).json({message: 'no such user'});
 }
 
 exports.logout = async (req, res) => {

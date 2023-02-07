@@ -8,7 +8,7 @@ exports.getSurvey = async (req, res) => {
     const questionnaireID = req.params.questionnaireID;
 
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey) return res.status(402).json({message: 'no such survey'});
 
     const questions = await survey.getQuestions();
     const keywords = await survey.getKeywords();
@@ -38,7 +38,7 @@ exports.getQuestion = async (req, res) => {
     const qID = req.params.questionID;
 
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey) return res.status(402).json({message: 'no such survey'});
 
     let questions = await survey.getQuestions({where: {qID}});
     if(!questions.length) return res.status(400).json({message: 'no such question'});
@@ -76,10 +76,10 @@ exports.postAnswer = async (req, res) => {
     const username = req.user.username;
 
     const user = await User.findOne({where: {username}});
-    if(!user) return res.status(400).json({message: 'only users can answer'})
+    if(!user) return res.status(403).json({message: 'only users can answer'})
 
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey) return res.status(402).json({message: 'no such survey'});
 
     const questions = await survey.getQuestions({where: {qID}});
     if(!questions.length) return res.status(400).json({message: 'no such question'});
@@ -101,7 +101,7 @@ exports.postAnswer = async (req, res) => {
         answerId: answer.id
     });
 
-     return res.sendStatus(200);
+     return res.sendStatus(201);
 }
 
 exports.getSessionAnswers = async (req, res) => {
@@ -110,10 +110,10 @@ exports.getSessionAnswers = async (req, res) => {
     const ses = req.params.session;
 
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey) return res.status(402).json({message: 'no such survey'});
 
     const session = await Session.findOne({where: {ses}});
-    if(!session) return res.status(400).json({message: 'no such session'});
+    if(!session) return res.status(402).json({message: 'no such session'});
 
     const answers = await session.getUniqueAnswers();
 
@@ -141,7 +141,7 @@ exports.getAnswers = async (req, res) => {
     const qID = req.params.questionID;
 
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({message: 'no such survey'});
+    if(!survey) return res.status(402).json({message: 'no such survey'});
 
     const questions = await survey.getQuestions({where: {qID}});
     if(!questions.length) return res.status(400).json({message: 'no such question'});
