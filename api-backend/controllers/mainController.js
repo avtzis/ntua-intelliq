@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.layout = (req, res) => {
-    return res.redirect('/surveys');
+    return res.redirect('/intelliq_api/surveys');
 }
 
 exports.register = async (req, res) => {

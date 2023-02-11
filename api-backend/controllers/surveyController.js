@@ -342,43 +342,46 @@ exports.updateSurvey = async (req, res) => {
     if(title) survey.title = title;
     if(about) survey.about = about;
 
-    for(const keyword of keywords) {
-        const keywordExists = await survey.getKeywords({where: {title: keyword}});
-        if(keywordExists.length === 0) {
-            let myKeyword = await Keyword.findOne({where: {title: keyword}});
-            if(!myKeyword) myKeyword = await Keyword.create({title: keyword});
-            await survey.addKeyword(myKeyword);
-        }
-    }
-
-    
-    const myQuestions = await survey.getQuestions();
-    for(let i in myQuestions) {
-        myQuestions[i].title = questions[i].title;
-        myQuestions[i].type = questions[i].type;
-        myQuestions[i].required = questions[i].required;
-
-        const myAnswers = await myQuestions[i].getAnswers();
-        for(let j in myAnswers) {
-            myAnswers[j].title = questions[i].answers[j].title;
-            await myAnswers[j].save();
-        }
-        await myQuestions[i].save();
-    }
-
-    for(let i in myQuestions) {
-        if(questions[i].nextQuestionIfSkipped) {
-            const nextQuestionIndex = Number(questions[i].nextQuestionIfSkipped);
-            if(nextQuestionIndex > i) {
-                await myQuestions[i].setIfSkippedNextQuestion(myQuestions[nextQuestionIndex]);
+    if(keywords) {
+        for(const keyword of keywords) {
+            const keywordExists = await survey.getKeywords({where: {title: keyword}});
+            if(keywordExists.length === 0) {
+                let myKeyword = await Keyword.findOne({where: {title: keyword}});
+                if(!myKeyword) myKeyword = await Keyword.create({title: keyword});
+                await survey.addKeyword(myKeyword);
             }
         }
+    }
 
-        const myAnswers = await myQuestions[i].getAnswers();
-        for(let j in myAnswers) {
-            const nextQuestionIndex = Number(questions[i].answers[j].nextQuestion);
-            if(nextQuestionIndex > i) {
-                await myAnswers[j].setNextQuestion(myQuestions[nextQuestionIndex]);
+    if(questions) {
+        const myQuestions = await survey.getQuestions();
+        for(let i in myQuestions) {
+            myQuestions[i].title = questions[i].title;
+            myQuestions[i].type = questions[i].type;
+            myQuestions[i].required = questions[i].required;
+    
+            const myAnswers = await myQuestions[i].getAnswers();
+            for(let j in myAnswers) {
+                myAnswers[j].title = questions[i].answers[j].title;
+                await myAnswers[j].save();
+            }
+            await myQuestions[i].save();
+        }
+    
+        for(let i in myQuestions) {
+            if(questions[i].nextQuestionIfSkipped) {
+                const nextQuestionIndex = Number(questions[i].nextQuestionIfSkipped);
+                if(nextQuestionIndex > i) {
+                    await myQuestions[i].setIfSkippedNextQuestion(myQuestions[nextQuestionIndex]);
+                }
+            }
+    
+            const myAnswers = await myQuestions[i].getAnswers();
+            for(let j in myAnswers) {
+                const nextQuestionIndex = Number(questions[i].answers[j].nextQuestion);
+                if(nextQuestionIndex > i) {
+                    await myAnswers[j].setNextQuestion(myQuestions[nextQuestionIndex]);
+                }
             }
         }
     }

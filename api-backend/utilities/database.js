@@ -1,42 +1,61 @@
 const mysql = require('mysql2');
-const {Sequelize, Model, DataTypes} = require('sequelize');
+const {Sequelize, DataTypes} = require('sequelize');
+require('custom-env').env('staging');
 
 const dbconnection = {
     dialect: 'mysql',
     host: 'localhost',
     port: '3306',
-    user: 'user',
-    password: 'user'
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS
 }
 
-// Connect to MySQL server
-const connection = mysql.createConnection(
-    {
+const dbInit = () => {
+    
+    // Connect to MySQL server
+    const connection = mysql.createConnection(
+        {
+            host: dbconnection.host,
+            user: dbconnection.user,
+            password: dbconnection.password,
+            port: dbconnection.port
+        }
+    );
+    
+    // Create database if it does not exist
+    connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
+        if(err) console.error(err);
+        else console.log(results);
+    });
+
+    // Connect sequelize to database
+    const db = new Sequelize('intelliQ', dbconnection.user, dbconnection.password, {
         host: dbconnection.host,
-        user: dbconnection.user,
-        password: dbconnection.password,
-        port: dbconnection.port
-    }
-);
+        port: dbconnection.port,
+        dialect: dbconnection.dialect
+    });
 
-// Create database if it does not exist
-connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
-    if(err) console.error(err);
-    else console.log(results);
-});
+    return db;
+}
 
-// Connect sequelize to database
-const db = new Sequelize('intelliQ', 'user', 'user', {
-    host: dbconnection.host,
-    port: dbconnection.port,
-    dialect: dbconnection.dialect
-});
+const db = dbInit();
 
 verifyDB = async () => {
     try {
         await db.authenticate();
-        await db.sync({force: false, alter: true});
-        //await Administrator.create({username: 'avtzis', password: 'nokiak123'});
+        await db.sync({force: false, alter: false});
+        await Administrator.findOrCreate({where: {username: 'admin'}, defaults: {
+            password: 'admin',
+            corporation: 'softlab',
+            name: 'Altan',
+            surname: 'Avtzi',
+            ageGroup: '18-24',
+            sex: 'Male',
+            city: 'Athens',
+            state: 'Attica',
+            education: 'Upper Secondary Education',
+            income: '<5.000'
+        }});
         console.log('Connection with the database has been established successfully');
     } catch(err) {console.error('Unable to connect to the database:', err);}
 }
