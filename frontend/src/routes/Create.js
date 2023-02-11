@@ -148,7 +148,7 @@ const Create = () => {
             severity = 'success';
             message = response.data.message;
             setOpenAlert(true);
-            //window.location.href='/surveys';
+            window.location.href='/surveys';
         }).catch(err => {
             console.error(err.response.data.message);
             severity = 'error';
