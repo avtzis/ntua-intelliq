@@ -2,7 +2,6 @@ const app = require('./app');
 const https = require('https');
 const fs = require('fs');
 const { verifyDB } = require('./utilities/database');
-const inquirer = require('inquirer');
 require('custom-env').env('staging');
 
 const myServer = https.createServer({
