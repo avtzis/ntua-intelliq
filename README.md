@@ -107,6 +107,11 @@
    cd api-backend/
    npm test
    ```
+   
+### Command Line Interface
+   ```sh
+   se2234 --help
+   ```
 
 _For more examples, please refer to the [Documentation](vpp/api)_
 
