@@ -1,0 +1,6 @@
+# CLI
+
+### Structure
+  ```sh
+  asd
+  ```
