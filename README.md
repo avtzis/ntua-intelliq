@@ -23,31 +23,6 @@
 
 
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
 
 
 
@@ -66,8 +41,6 @@
   
 *note: avtzis = ntua-el19421*
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 ### Built With
@@ -77,7 +50,6 @@
 * MySQL
 * Visual Paradigm
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -111,7 +83,6 @@
 
 *ΒΑΣΙΚΗ ΣΗΜΕΙΩΣΗ:* Η σωστή εγκατάσταση και λειτουργία του προγράμματος δεν μπορεί να εγγυηθεί σε λειτουργικά συστήματα της Microsoft.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -139,7 +110,6 @@
 
 _For more examples, please refer to the [Documentation](vpp/api)_
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -150,7 +120,6 @@ _For more examples, please refer to the [Documentation](vpp/api)_
 * [Frontend](frontend/)
 * [CLI-Client](cli/)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -167,7 +136,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -178,6 +146,5 @@ Altan Avtzi - [@avtzis01](https://twitter.com/avtzis01) - avtzialtan@hotmail.com
 
 Project Link: [https://github.com/ntua/SoftEng22-34](https://github.com/ntua/SoftEng22-34)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
