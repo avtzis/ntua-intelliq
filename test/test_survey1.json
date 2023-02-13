@@ -1,0 +1,65 @@
+{
+  "questionnaireID": "QQ999",
+  "questionnaireTitle": "Test Survey",
+  "keywords": [
+    "football",
+    "islands",
+    "timezone"
+  ],
+  "questions": [
+    {
+      "qID": "Q01",
+      "qtext": "Συμφωνείτε να αλλάζει η ώρα κάθε χρόνο;",
+      "required": "TRUE",
+      "type": "question",
+      "options": [
+        {
+          "optID": "Q01A1",
+          "opttxt": "Ναι",
+          "nextqID": "Q02"
+        },
+        {
+          "optID": "Q01A2",
+          "opttxt": "Οχι",
+          "nextqID": "Q02"
+        }
+      ]
+    },
+    {
+      "qID": "Q02",
+      "qtext": "Ασχολείστε με το ποδόσφαιρο;",
+      "required": "TRUE",
+      "type": "question",
+      "options": [
+        {
+          "optID": "Q02A1",
+          "opttxt": "Ναι",
+          "nextqID": "Q03"
+        },
+        {
+          "optID": "Q02A2",
+          "opttxt": "Οχι",
+          "nextqID": "Q03"
+        }
+      ]
+    },
+    {
+      "qID": "Q03",
+      "qtext": "Έχετε ζήσει σε νησί;",
+      "required": "TRUE",
+      "type": "question",
+      "options": [
+        {
+          "optID": "Q03A1",
+          "opttxt": "Ναι",
+          "nextqID": "-"
+        },
+        {
+          "optID": "Q03A2",
+          "opttxt": "Οχι",
+          "nextqID": "-"
+        }
+      ]
+    }
+  ]
+}
