@@ -1,5 +1,4 @@
 const { User, Administrator, Token, Questionnaire, Keyword, Session, Question, UniqueAnswer } = require("../utilities/database");
-//import { Parser } from '@json2csv/plainjs';
 const {Parser} = require('@json2csv/plainjs');
 const parser = new Parser();
 
