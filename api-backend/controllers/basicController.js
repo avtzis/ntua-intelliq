@@ -119,14 +119,14 @@ exports.getSessionAnswers = async (req, res) => {
     let data = {
         questionnaireID,
         session: ses,
-        answers: answers.map(async answer => {
+        answers: await Promise.all(answers.map(async answer => {
             const question = await Question.findByPk(answer.questionID);
             const myAnswer = await answer.getAnswer();
             return {
                 qID: question.qID,
                 ans: question.answerType === 'options' ? myAnswer.optID : '<*>'
             }
-        })
+        }))
     }
 
     if(format === 'csv') data = parser.parse(data);
@@ -151,14 +151,14 @@ exports.getAnswers = async (req, res) => {
     let data = {
         questionnaireID,
         questionID: qID,
-        answers: answers.map(async answer => {
+        answers: await Promise.all(answers.map(async answer => {
             const session = await answer.getSession();
             const myAnswer = await answer.getAnswer();
             return {
                 session: session.ses,
                 ans: question.answerType === 'options' ? myAnswer.optID : '<*>'
             }
-        })
+        }))
     }
 
     res.set('Content-Type', 'application/json');
