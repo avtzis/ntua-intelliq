@@ -95,7 +95,7 @@ exports.serverReset = async (req, res) => {
         await Keyword.destroy({where: {id: {[Op.gte]: 1}}});
         await Questionnaire.destroy({where: {id: {[Op.gte]: 1}}});
         await Session.destroy({where: {id: {[Op.gte]: 1}}});
-        await User.destroy({where: {id: {[Op.gte]: 1}}});
+        await User.destroy({where: {id: {[Op.gte]: 2}}});
         await Token.destroy({where: {role: 'user'}});
 
         return res.status(200).json({status: 'OK'});

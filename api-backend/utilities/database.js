@@ -56,6 +56,17 @@ verifyDB = async () => {
             education: 'Upper Secondary Education',
             income: '<5.000'
         }});
+        await User.findOrCreate({where: {username: 'user'}, defaults: {
+            password: 'user',
+            name: 'Altan',
+            surname: 'Avtzi',
+            ageGroup: '18-24',
+            sex: 'Male',
+            city: 'Athens',
+            state: 'Attica',
+            education: 'Upper Secondary Education',
+            income: '<5.000'
+        }});
         console.log('Connection with the database has been established successfully');
     } catch(err) {console.error('Unable to connect to the database:', err);}
 }
