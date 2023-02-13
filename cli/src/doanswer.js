@@ -17,7 +17,7 @@ module.exports = options => {
     const session = options.session_id;
     const optionID = options.option_id;
     
-    axios.post(api + '/question/' + surveyID + '/' + questionID + '/' + session + '/' + optionID, {}, {
+    axios.post(api + '/doanswer/' + surveyID + '/' + questionID + '/' + session + '/' + optionID, {}, {
         httpsAgent: new https.Agent({rejectUnauthorized: false}),
         headers: {'X-OBSERVATORY-AUTH': token}
     }).then(response => {
