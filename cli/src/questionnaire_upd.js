@@ -3,6 +3,7 @@ const api = require('../utilities/api');
 const https = require('https');
 const fs = require('fs');
 const tokenpath = require('../utilities/tokenpath');
+const FormData = require('form-data');
 
 module.exports = options => {
     let token;
@@ -15,15 +16,15 @@ module.exports = options => {
     const pathname = options.source;
 
     const file = fs.createReadStream(pathname);
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', file);
     
     axios.post(api + '/admin/questionnaire_upd', formData, {
         httpsAgent: new https.Agent({rejectUnauthorized: false}),
-        headers: [
-            {'X-OBSERVATORY-AUTH': token},
-            {'Content-Type': 'multipart/form-data'}
-        ]
+        headers: {
+            'X-OBSERVATORY-AUTH': token,
+            'Content-Type': 'multipart/form-data'
+        },
     }).then(response => {
         console.log(response.data);
     }).catch(err => {
