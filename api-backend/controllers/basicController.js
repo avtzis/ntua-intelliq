@@ -26,9 +26,13 @@ exports.getSurvey = async (req, res) => {
         })
     };
 
-    if(format === 'csv') data = parser.parse(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.questions);
+        res.set('Content-Type', 'text/csv');
+    }
 
-    return res.status(200).json(data);
+    return res.status(200).send(data);
 }
 
 exports.getQuestion = async (req, res) => {
@@ -61,9 +65,13 @@ exports.getQuestion = async (req, res) => {
         })
     }
 
-    if(format === 'csv') data = parser.parse(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.options);
+        res.set('Content-Type', 'text/csv');
+    }
 
-    return res.status(200).json(data);
+    return res.status(200).send(data);
 }
 
 exports.postAnswer = async (req, res) => {
@@ -129,9 +137,13 @@ exports.getSessionAnswers = async (req, res) => {
         }))
     }
 
-    if(format === 'csv') data = parser.parse(data);
-    
-    return res.status(200).json(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.answers);
+        res.set('Content-Type', 'text/csv');
+    }
+
+    return res.status(200).send(data);
 }
 
 exports.getAnswers = async (req, res) => {
@@ -163,7 +175,7 @@ exports.getAnswers = async (req, res) => {
 
     res.set('Content-Type', 'application/json');
     if(format === 'csv') {
-        data = parser.parse(data);
+        data = parser.parse(data.answers);
         res.set('Content-Type', 'text/csv');
     }
 

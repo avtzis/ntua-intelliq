@@ -1,6 +1,8 @@
 const { User, Administrator, Token, Questionnaire, Keyword } = require("../utilities/database");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {Parser} = require('@json2csv/plainjs');
+const parser = new Parser();
 
 exports.layout = (req, res) => {
     return res.redirect('/intelliq_api/surveys');
@@ -37,6 +39,8 @@ exports.login = async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const myToken = req.header('X-OBSERVATORY-AUTH');
+    const format = req.query.format;
+    res.set('Content-Type', 'application/json');
 
     if(!(username && password)) return res.status(400).json({message: 'not enough paramaters'});
     
@@ -52,7 +56,12 @@ exports.login = async (req, res) => {
             try {
                 await admin.createToken({token, username, role: 'admin'});
             } catch(err) {return res.status(500).json({message: 'internal server error', err})}
-            return res.status(200).json({username, role: 'admin', token, message: 'login successful'});
+            let data = {username, role: 'admin', token, message: 'login successful'};
+            if(format === 'csv') {
+                data = parser.parse(data);
+                res.set('Content-Type', 'text/csv');
+            }
+            return res.status(200).send(data);
         } else {
             return res.status(400).json({message: 'wrong credentials'});
         }
@@ -70,7 +79,12 @@ exports.login = async (req, res) => {
             try {
                 await user.createToken({token, username, role: 'user'});
             } catch(err) {return res.status(500).json({message: 'internal server error'})}
-            return res.status(200).json({username, role: 'user', token, message: 'login successful'});
+            let data = {username, role: 'user', token, message: 'login successful'};
+            if(format === 'csv') {
+                data = parser.parse(data);
+                res.set('Content-Type', 'text/csv');
+            }
+            return res.status(200).send(data);
         } else {
             return res.status(400).json({message: 'wrong credentials'});
         }

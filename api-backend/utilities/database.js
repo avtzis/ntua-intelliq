@@ -43,7 +43,7 @@ const db = dbInit();
 verifyDB = async () => {
     try {
         await db.authenticate();
-        await db.sync({force: true, alter: false});
+        await db.sync({force: false, alter: false});
         await Administrator.findOrCreate({where: {username: 'admin'}, defaults: {
             password: 'admin',
             corporation: 'softlab',
