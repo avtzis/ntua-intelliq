@@ -1,0 +1,159 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>REST API</title>
+<link type="text/css" rel="stylesheet" href="restapi.css">
+<script>
+function copyToClipboard(id) {
+	text = document.getElementById(id).textContent.replace(/\s+/g, " ").trim();;
+	window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+}
+</script>
+</head>
+<body>
+	<header class="company">Sheesh Industries</header>
+	<div class="container">
+		<div class="toc">
+			<div class="toc-top"></div>
+<div class="item"><a href="Do_Answer.html">Do Answer</a></div>
+<div class="item"><a href="Get_Question.html">Get Question</a></div>
+<div class="item"><a href="Get_Question_Answers.html">Get Question Answers</a></div>
+<div class="item"><a href="Get_Questionnaire.html">Get Questionnaire</a></div>
+<div class="item"><a href="Get_Session_Answers.html">Get Session Answers</a></div>
+<div class="item"><a href="Get_User.html">Get User</a></div>
+<div class="item"><a href="Healthcheck.html">Healthcheck</a></div>
+<div class="item"><a href="List_all_Surveys.html">List all Surveys</a></div>
+<div class="item"><a href="Login.html">Login</a></div>
+<div class="item"><a href="Logout.html">Logout</a></div>
+<div class="item"><a href="Register.html">Register</a></div>
+<div class="item"><a href="Reset_All.html">Reset All</a></div>
+<div class="current item">Reset Questionnaire</div>
+<div class="item"><a href="Upload_Questionnaire.html">Upload Questionnaire</a></div>
+<div class="item"><a href="usermod.html">usermod</a></div>
+<div class="item"><a href="Verify_Login.html">Verify Login</a></div>
+		</div>
+		<div class="main">
+			<div class="background"></div>
+			<div class="content">
+				<header>Reset Questionnaire</header>
+				<div class="basic-info">
+										<div class="title">Resource URL</div>
+					<div>https://localhost:9103/intelliq_api/admin/resetq</div>
+
+										<div class="title">Parameters</div>
+					<table class="parameters">
+												<tr>
+						<td><div class="name">questionnaireID (Path)</div><div>
+												optional
+												</div>
+						</td><td><div class="description"></div>
+																		</td>
+						</tr>
+											</table>
+										</div>
+				</div>
+
+				<div class="sidebar">
+					<div class="code-block">
+						<header>Curl Example</header>
+						<a class="copy" href="javascript:copyToClipboard('curl-example')"></a>
+						<code id='curl-example'>
+						$ curl -X POST
+												-d ''
+												"https://localhost:9103/intelliq_api/admin/resetq"
+						</code>
+					</div>
+				</div>
+
+				<div class="content">
+					<header class="section">Request</header>
+										<div class="empty-section">No Request Defined</div>
+									</div>
+
+				<div class="sidebar">
+					
+									</div>
+
+				<div class="content">
+																<header class="section">Response
+- Status 400
+</header>
+<div class="description"><span>
+</span>
+</div>
+<div class="image"><img src="img/Reset_Questionnaire_400_response.png"></div>
+			<a name="Bad request"></a>
+<div class="classname">
+	Bad request
+	</div>
+<div class="attributes">
+	<table>
+		<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+				<tr>
+		<td>message</td><td>
+				string
+				</td><td></td>
+		</tr>
+			</table>
+</div>
+												<header class="section">Response
+- Status 500
+</header>
+<div class="description"><span>
+</span>
+</div>
+<div class="image"><img src="img/Reset_Questionnaire_500_response.png"></div>
+			<a name="Internal server error"></a>
+<div class="classname">
+	Internal server error
+	</div>
+<div class="attributes">
+	<table>
+		<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+				<tr>
+		<td>message</td><td>
+				string
+				</td><td></td>
+		</tr>
+			</table>
+</div>
+												<header class="section">Response
+- Status 200
+</header>
+<div class="description"><span>
+</span>
+</div>
+<div class="image"><img src="img/Reset_Questionnaire_200_response.png"></div>
+			<a name="resetq"></a>
+<div class="classname">
+	resetq
+	</div>
+<div class="attributes">
+	<table>
+		<tr><th>Name</th><th>Type</th><th>Description</th></tr>
+				<tr>
+		<td>status</td><td>
+				String
+				</td><td></td>
+		</tr>
+			</table>
+</div>
+										</div>
+
+				<div class="sidebar">
+					
+									</div>
+
+				<div class="content" style="clear:both">
+					<footer class="download">For client development, you can download <a href="xml/Reset_Questionnaire.xml" target="_blank">Reset_Questionnaire.xml</a></footer>
+					<footer class="powered-by"><a href="http://www.visual-paradigm.com" target="_blank">Powered by Visual Paradigm</a></footer>
+				</div>
+
+				<div style="clear:both"></div>
+		</div>
+	</div>
+</body>
+</html>

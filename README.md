@@ -72,7 +72,7 @@
 
 1. Clone the repo
    ```sh
-   git clone https://ntua-el19241@github.com/ntua/SoftEng22-34.git && cd Softeng22-34/
+   git clone https://ntua-el19241@github.com/ntua/SoftEng22-34.git && cd SoftEng22-34/
    ```
 2. Run the installation script
    ```sh
