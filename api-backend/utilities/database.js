@@ -67,6 +67,11 @@ verifyDB = async () => {
             education: 'Upper Secondary Education',
             income: '<5.000'
         }});
+        await User.create({username: 'user1', password: 'user1'});
+        await User.create({username: 'user2', password: 'user2'});
+        await User.create({username: 'user3', password: 'user3'});
+        await User.create({username: 'user4', password: 'user4'});
+        await User.create({username: 'user5', password: 'user5'});
         console.log('Connection with the database has been established successfully');
     } catch(err) {console.error('Unable to connect to the database:', err);}
 }
