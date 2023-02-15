@@ -13,8 +13,12 @@ module.exports = options => {
     }
     
     const username = options.users;
+    const format = options.format;
+
+    let query = '?format=json';
+    if(format === 'csv') query = '?format=csv';
     
-    axios.get(api + '/admin/users/' + username, {
+    axios.get(api + '/admin/users/' + username + query, {
         httpsAgent: new https.Agent({rejectUnauthorized: false}),
         headers: {'X-OBSERVATORY-AUTH': token}
     }).then(response => {
