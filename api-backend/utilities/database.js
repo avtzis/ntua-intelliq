@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const {Sequelize, DataTypes} = require('sequelize');
 require('custom-env').env('staging');
 
@@ -10,11 +10,9 @@ const dbconnection = {
     password: process.env.DB_PASS
 }
 
-const dbInit = () => {
-    let db;
-    
+const dbInit = async () => {    
     // Connect to MySQL server
-    const connection = mysql.createConnection({
+    const connection = await mysql.createConnection({
             host: dbconnection.host,
             user: dbconnection.user,
             password: dbconnection.password,
@@ -23,24 +21,24 @@ const dbInit = () => {
     );
     
     // Create database if it does not exist
-    connection.query('CREATE DATABASE IF NOT EXISTS softeng2234', (err, results) => {
-        if(err) {
-            db = undefined;
-            console.error(err);
-        } else {
-            // Connect sequelize to database
-            db = new Sequelize('softeng2234', dbconnection.user, dbconnection.password, {
-                host: dbconnection.host,
-                port: dbconnection.port,
-                dialect: dbconnection.dialect
-            });
-        }
-    });
-
-    return db;
+    await connection.query('CREATE DATABASE IF NOT EXISTS softeng2234');
 }
-
-const db = dbInit();
+let db;
+// Connect sequelize to database
+try {
+    db = new Sequelize('softeng2234', dbconnection.user, dbconnection.password, {
+        host: dbconnection.host,
+        port: dbconnection.port,
+        dialect: dbconnection.dialect
+    });
+} catch {
+    dbInit();
+    db = new Sequelize('softeng2234', dbconnection.user, dbconnection.password, {
+        host: dbconnection.host,
+        port: dbconnection.port,
+        dialect: dbconnection.dialect
+    });
+}
 
 verifyDB = async () => {
     try {
