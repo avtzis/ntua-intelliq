@@ -23,13 +23,13 @@ const dbInit = () => {
     );
     
     // Create database if it does not exist
-    connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
+    connection.query('CREATE DATABASE IF NOT EXISTS softeng2234', (err, results) => {
         if(err) console.error(err);
         else console.log(results);
     });
 
     // Connect sequelize to database
-    const db = new Sequelize('intelliQ', dbconnection.user, dbconnection.password, {
+    const db = new Sequelize('softeng2234', dbconnection.user, dbconnection.password, {
         host: dbconnection.host,
         port: dbconnection.port,
         dialect: dbconnection.dialect
