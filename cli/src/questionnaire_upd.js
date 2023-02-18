@@ -26,8 +26,8 @@ module.exports = options => {
             'Content-Type': 'multipart/form-data'
         },
     }).then(response => {
-        console.log(response.data);
+        console.log(response.data.message);
     }).catch(err => {
-        console.error(err.response.data);
+        console.error(err.response.data.message);
     });
 }

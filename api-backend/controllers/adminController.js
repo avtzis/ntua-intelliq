@@ -1,13 +1,29 @@
 const { db, dbconnection, Answer, Keyword, Question, Questionnaire, Session, Token, UniqueAnswer, User, Administrator } = require('../utilities/database');
 const { Op } = require('sequelize');
 const busboy = require('busboy');
+const {Parser} = require('@json2csv/plainjs');
+const parser = new Parser();
 
 exports.getHealthCheck = async (req, res) => {
+    const format = req.query.format;
+    res.set('Content-Type', 'application/json');
+
+    let data;
     try {
         await db.authenticate();
-        return res.status(200).json({status: 'OK', dbconnection})
+        data = {status: 'OK', dbconnection};
+        if(format === 'csv') {
+            data = parser.parse(data);
+        res.set('Content-Type', 'text/csv');
+        }
+        return res.status(200).send(data);
     } catch(err) {
-        return res.status(500).json({status: 'failed', dbconnection})
+        data = {status: 'failed', dbconnection};
+        if(format === 'csv') {
+            data = parser.parse(data);
+        res.set('Content-Type', 'text/csv');
+        }
+        return res.status(500).send(data);
     }
 }
 
@@ -88,6 +104,10 @@ exports.postSurvey = async (req, res) => {
 }
 
 exports.serverReset = async (req, res) => {
+    const format = req.query.format;
+    res.set('Content-Type', 'application/json');
+
+    let data;
     try {
         await UniqueAnswer.destroy({where: {id: {[Op.gte]: 1}}});
         await Answer.destroy({where: {id: {[Op.gte]: 1}}});
@@ -98,19 +118,55 @@ exports.serverReset = async (req, res) => {
         await User.destroy({where: {id: {[Op.gte]: 2}}});
         await Token.destroy({where: {role: 'user'}});
 
-        return res.status(200).json({status: 'OK'});
-    } catch(err) {return res.status(500).json({status: 'failed', reason: err})}
+        data = {status: 'OK'};
+        if(format === 'csv') {
+            data = parser.parse(data);
+            res.set('Content-Type', 'text/csv');
+        }
+        return res.status(200).send(data);
+    } catch(err) {
+        data = {status: 'failed', reason: err};
+        if(format === 'csv') {
+            data = parser.parse(data);
+            res.set('Content-Type', 'text/csv');
+        }
+        return res.status(500).send(data);
+    }
 }
 
 exports.surveyReset = async (req, res) => {
+    const format = req.query.format;
     const questionnaireID = req.params.questionnaireID;
     const survey = await Questionnaire.findOne({where: {questionnaireID}});
-    if(!survey) return res.status(400).json({status: 'failed', reason: 'no such survey'});
+    res.set('Content-Type', 'application/json');
+    let data;
+
+    if(!survey) {
+        data = {status: 'failed', reason: 'no such survey'};
+        if(format === 'csv') {
+            data = parser.parse(data);
+            res.set('Content-Type', 'text/csv');
+        }
+        return res.status(400).send(data);
+    }
 
     try {
         await Session.destroy({where: {questionnaireId: survey.id}});
-        return res.status(200).json({status: 'OK'});
-    } catch(err) {return res.status(500).json({status: 'failed', reason: err})}
+
+        data = {status: 'OK'};
+        if(format === 'csv') {
+            data = parser.parse(data);
+            res.set('Content-Type', 'text/csv');
+        }
+        return res.status(200).send(data);
+    } catch(err) {
+        data = {status: 'failed', reason: err};
+        if(format === 'csv') {
+            data = parser.parse(data);
+            res.set('Content-Type', 'text/csv');
+        }
+        return res.status(500).send(data);
+    }
 }
 
 exports.userMod = async (req, res) => {
@@ -137,15 +193,28 @@ exports.userMod = async (req, res) => {
 
 exports.getUser = async (req, res) => {
     const username = req.params.username;
-
+    const format = req.query.format;
+    res.set('Content-Type', 'application/json');
     
     let user = await User.findOne({where: {username}});
     if(!user) {
         user = await Administrator.findOne({where: {username}});
-        if(!user) return res.status(402).json({message: 'no user'});
+        if(!user) {
+            let data = {message: 'no user'};
+            if(format === 'csv') {
+                data = parser.parse(data);
+                res.set('Content-Type', 'text/csv');
+            }
+            return res.status(402).send(data);
+        }
+    }
+    
+    if(format === 'csv') {
+        user = parser.parse(user.toJSON());
+        res.set('Content-Type', 'text/csv');
     }
 
-    return res.status(200).json({user});
+    return res.status(200).send(user);
 }
 
 exports.getAdmin = async (req, res) => {

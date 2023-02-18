@@ -26,9 +26,13 @@ exports.getSurvey = async (req, res) => {
         })
     };
 
-    if(format === 'csv') data = parser.parse(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.questions);
+        res.set('Content-Type', 'text/csv');
+    }
 
-    return res.status(200).json(data);
+    return res.status(200).send(data);
 }
 
 exports.getQuestion = async (req, res) => {
@@ -61,9 +65,13 @@ exports.getQuestion = async (req, res) => {
         })
     }
 
-    if(format === 'csv') data = parser.parse(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.options);
+        res.set('Content-Type', 'text/csv');
+    }
 
-    return res.status(200).json(data);
+    return res.status(200).send(data);
 }
 
 exports.postAnswer = async (req, res) => {
@@ -93,14 +101,24 @@ exports.postAnswer = async (req, res) => {
     if(!answers.length) return res.status(400).json({message: 'no such answer'});
     const answer = answers[0];
 
-    await UniqueAnswer.create({
-        context: answer.title,
-        questionID: question.id,
+    const uAnswer = await UniqueAnswer.findOne({where: {
         sessionId: session.id,
-        answerId: answer.id
-    });
+        questionID: question.id,
+    }});
+    if(uAnswer) {
+        uAnswer.context = answer.title;
+        uAnswer.answerId = answer.id;
+        await uAnswer.save();
+    } else {
+        await UniqueAnswer.create({
+            context: answer.title,
+            questionID: question.id,
+            sessionId: session.id,
+            answerId: answer.id
+        });
+    }
 
-     return res.sendStatus(201);
+    return res.sendStatus(201);
 }
 
 exports.getSessionAnswers = async (req, res) => {
@@ -129,9 +147,13 @@ exports.getSessionAnswers = async (req, res) => {
         }))
     }
 
-    if(format === 'csv') data = parser.parse(data);
-    
-    return res.status(200).json(data);
+    res.set('Content-Type', 'application/json');
+    if(format === 'csv') {
+        data = parser.parse(data.answers);
+        res.set('Content-Type', 'text/csv');
+    }
+
+    return res.status(200).send(data);
 }
 
 exports.getAnswers = async (req, res) => {
@@ -163,7 +185,7 @@ exports.getAnswers = async (req, res) => {
 
     res.set('Content-Type', 'application/json');
     if(format === 'csv') {
-        data = parser.parse(data);
+        data = parser.parse(data.answers);
         res.set('Content-Type', 'text/csv');
     }
 

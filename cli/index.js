@@ -26,39 +26,47 @@ program.command('login')
     .description('login to a user or admin account')
     .requiredOption('--username <username>')
     .requiredOption('--passw <password>')
+    .option('--format <format>')
     .action(options => login(options));
 
 program.command('logout')
     .description('log out of an account')
+    .option('--format <format>')
     .action(logout);
 
 program.command('healthcheck')
     .description('perform a database connection verification')
-    .action(healthcheck);
+    .option('--format <format>')
+    .action(options => healthcheck(options));
 
 program.command('resetall')
     .description('truncate the database')
-    .action(resetall);
+    .option('--format <format>')
+    .action(options => resetall(options));
 
 program.command('questionnaire_upd')
     .description('upload a signle JSON file to create a survey')
     .requiredOption('--source <path>', 'File path name')
+    .option('--format <format>')
     .action(options => questionnaire_upd(options))
 
 program.command('resetq')
     .description('delete all answers given to a survey')
     .requiredOption('--questionnaire_id <surveyID>')
+    .option('--format <format>')
     .action(options => resetq(options));
 
 program.command('questionnaire')
     .description('Show survey info')
     .requiredOption('--questionnaire_id <surveyID>')
+    .option('--format <format>')
     .action(options => questionnaire(options));
 
 program.command('question')
     .description('Show question info')
     .requiredOption('--questionnaire_id <surveyID>')
     .requiredOption('--question_id <questionID>')
+    .option('--format <format>')
     .action(options => question(options));
 
 program.command('doanswer')
@@ -67,18 +75,21 @@ program.command('doanswer')
     .requiredOption('--question_id <questionID>')
     .requiredOption('--session_id <sessionID>')
     .requiredOption('--option_id <optionID>')
+    .option('--format <format>')
     .action(options => doanswer(options));
 
 program.command('getsessionanswers')
     .description('show every answer given in a specific session')
     .requiredOption('--questionnaire_id <surveyID>')
     .requiredOption('--session_id <sessionID>')
+    .option('--format <format>')
     .action(options => getsessionanswers(options));
 
 program.command('getquestionanswers')
     .description('show every answer given in a specific question')
     .requiredOption('--questionnaire_id <surveyID>')
     .requiredOption('--question_id <questionID>')
+    .option('--format <format>')
     .action(options => getquestionanswers(options));
 
 program.command('admin')
@@ -86,6 +97,7 @@ program.command('admin')
     .option('--username <username>')
     .option('--passw <password>')
     .option('--users <user>', 'show users\' info')
+    .option('--format <format>')
     .action(options => {
         if(options.usermod) usermod(options);
         if(options.users) users(options);

@@ -14,8 +14,12 @@ module.exports = options => {
     
     const surveyID = options.questionnaire_id;
     const session = options.session_id;
+    const format = options.format;
+
+    let query = '?format=json';
+    if(format === 'csv') query = '?format=csv';
     
-    axios.get(api + '/getsessionanswers/' + surveyID + '/' + session, {
+    axios.get(api + '/getsessionanswers/' + surveyID + '/' + session + query, {
         httpsAgent: new https.Agent({rejectUnauthorized: false}),
         headers: {'X-OBSERVATORY-AUTH': token}
     }).then(response => {

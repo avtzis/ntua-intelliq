@@ -1,4 +1,3 @@
-const mysql = require('mysql2');
 const {Sequelize, DataTypes} = require('sequelize');
 require('custom-env').env('staging');
 
@@ -10,40 +9,19 @@ const dbconnection = {
     password: process.env.DB_PASS
 }
 
-const dbInit = () => {
-    
-    // Connect to MySQL server
-    const connection = mysql.createConnection(
-        {
-            host: dbconnection.host,
-            user: dbconnection.user,
-            password: dbconnection.password,
-            port: dbconnection.port
-        }
-    );
-    
-    // Create database if it does not exist
-    connection.query('CREATE DATABASE IF NOT EXISTS intelliQ', (err, results) => {
-        if(err) console.error(err);
-        else console.log(results);
-    });
+// Connect sequelize to database
+const db = new Sequelize('softeng2234', dbconnection.user, dbconnection.password, {
+    host: dbconnection.host,
+    port: dbconnection.port,
+    dialect: dbconnection.dialect
+});
 
-    // Connect sequelize to database
-    const db = new Sequelize('intelliQ', dbconnection.user, dbconnection.password, {
-        host: dbconnection.host,
-        port: dbconnection.port,
-        dialect: dbconnection.dialect
-    });
-
-    return db;
-}
-
-const db = dbInit();
 
 verifyDB = async () => {
     try {
+        if(!db) throw err;
         await db.authenticate();
-        await db.sync({force: true, alter: false});
+        await db.sync({force: false, alter: false});
         await Administrator.findOrCreate({where: {username: 'admin'}, defaults: {
             password: 'admin',
             corporation: 'softlab',
@@ -67,8 +45,15 @@ verifyDB = async () => {
             education: 'Upper Secondary Education',
             income: '<5.000'
         }});
+        // await User.create({username: 'user1', password: 'user1'});
+        // await User.create({username: 'user2', password: 'user2'});
+        // await User.create({username: 'user3', password: 'user3'});
+        // await User.create({username: 'user4', password: 'user4'});
+        // await User.create({username: 'user5', password: 'user5'});
         console.log('Connection with the database has been established successfully');
-    } catch(err) {console.error('Unable to connect to the database:', err);}
+    } catch(err) {
+        console.error('Unable to connect to the database:', err);
+    }
 }
 
 // Models
